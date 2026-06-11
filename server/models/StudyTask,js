@@ -1,0 +1,29 @@
+import mongoose from 'mongoose';
+
+const topicSchema = new mongoose.Schema({
+  userId: { type: String, required: true, index: true },
+  semesterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Semester', required: true, index: true },
+  courseId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true }, // Links to the embedded course ID
+  
+  title: { type: String, required: true }, // e.g., "Pointer Arithmetic" or "Graph Traversals"
+  
+  // --- DOPAMINE & TRACKING ---
+  isCompleted: { type: Boolean, default: false },
+  completedAt: { type: Date },
+  
+  // --- SCHEDULING STATUS ---
+  status: { 
+    type: String, 
+    enum: ['backlog', 'scheduled', 'mastered'], 
+    default: 'backlog' 
+  },
+  
+  resourceLink: { type: String, default: '' }
+}, { timestamps: true });
+
+// Pre-save hook for logging
+topicSchema.pre('save', function() {
+  console.log(`[DB LOG] Topic update: "${this.title}" | Completed: ${this.isCompleted} | Status: ${this.status}`);
+});
+
+export default mongoose.model('Topic', topicSchema);

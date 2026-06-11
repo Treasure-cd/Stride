@@ -105,7 +105,7 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg bg-transparent border border-[#3d3651] text-[#f5f5f5] placeholder-[#666] focus:outline-none focus:border-[#6d28d9] transition-colors"
+            className="w-full px-4 py-3 rounded-lg bg-transparent border text-[#f5f5f5] placeholder-[#666] focus:outline-none focus:border-purple-600 transition-colors"
             placeholder="Enter your full name or nickname"
             disabled={isSaving}
           />
@@ -124,7 +124,7 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
               setShowDropdown(true);
             }}
             onFocus={() => setShowDropdown(true)}
-            className="w-full px-4 py-3 rounded-lg bg-transparent border border-[#3d3651] text-[#f5f5f5] placeholder-[#666] focus:outline-none focus:border-[#6d28d9] transition-colors"
+            className="w-full px-4 py-3 rounded-lg bg-transparent border text-[#f5f5f5] placeholder-[#666] focus:outline-none focus:border-purple-600 transition-colors"
             placeholder="Search for your university..."
             disabled={isSaving}
             autoComplete="off"
@@ -132,7 +132,7 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
 
           {/* Autocomplete Dropdown */}
           {showDropdown && institution.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-[#2a2640] border border-[#3d3651] rounded-lg shadow-xl max-h-60 overflow-y-auto">
+            <div className="absolute z-10 w-full mt-1 bg-[#080808] border border-[#3d3651] rounded-lg shadow-xl max-h-60 overflow-y-auto">
               {filteredUniversities.length > 0 ? (
                 filteredUniversities.map((uni, index) => (
                   <button
@@ -167,10 +167,10 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
         <button
           onClick={handleNext}
           disabled={!name.trim() || !institution.trim() || isSaving}
-          className={`w-full py-3.5 rounded-lg font-medium transition-all flex justify-center items-center ${
+          className={`w-full py-3.5 bg-[#6d28d9] text-white rounded-lg font-medium transition-all flex justify-center items-center ${
             !name.trim() || !institution.trim() || isSaving
-              ? "bg-[#3d3651] text-[#b0b0b0] cursor-not-allowed"
-              : "bg-[#6d28d9] text-white hover:bg-[#7c3aed]"
+              ? "cursor-not-allowed"
+              : "hover:opacity-50"
           }`}
         >
           {isSaving ? (
