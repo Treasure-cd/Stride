@@ -7,11 +7,9 @@ const topicSchema = new mongoose.Schema({
   
   title: { type: String, required: true }, // e.g., "Pointer Arithmetic" or "Graph Traversals"
   
-  // --- DOPAMINE & TRACKING ---
   isCompleted: { type: Boolean, default: false },
   completedAt: { type: Date },
   
-  // --- SCHEDULING STATUS ---
   status: { 
     type: String, 
     enum: ['backlog', 'scheduled', 'mastered'], 

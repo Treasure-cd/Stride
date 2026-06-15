@@ -6,9 +6,11 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
 
   return (
-   <div className="min-h-screen h-screen flex items-center justify-center">
-      <div id="pattern-div" className="w-1/2 h-full"></div>
-      <div className="w-1/2 flex flex-col items-center justify-center px-24">
+    <div className="min-h-screen lg:h-screen flex flex-col-reverse items-center justify-center lg:flex-row lg:items-stretch">
+      
+      <div id="pattern-div" className="w-full h-20 lg:w-1/2 lg:h-full bg-purple-200"></div>
+
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 sm:px-16 lg:px-24 py-12 lg:py-0">
         {isLogin ? <LoginForm /> : <SignupForm />}
         <div className="mt-4 text-center">
           <button

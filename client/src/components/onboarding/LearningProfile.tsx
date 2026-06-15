@@ -64,7 +64,7 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
     } else if (isSelected) {
       setSelectedProfiles(selectedProfiles.filter((p) => p !== profile))
       
-      // Wipe out the sub-options if they uncheck the parent category
+
       const updatedContext = { ...learningContext }
       PROFILE_SUB_OPTIONS[profile as Exclude<LearningProfile, 'Standard Track'>].forEach(sub => delete updatedContext[sub.key])
       setLearningContext(updatedContext)
@@ -117,7 +117,7 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
 
     try {
       await addPreferences()
-      onNext() // Signal parent we are completely done!
+      onNext()
     } catch (err: any) {
       console.error("Error saving preferences:", err)
       setError(err.message || "We had trouble saving. Please try again.")
@@ -146,7 +146,7 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
                 {/* Main Accordion Button */}
                 <button
                   onClick={() => toggleProfile(profile.id)}
-                  className={`p-5 rounded-lg border-2 transition-all text-left ${
+                  className={`p-5 rounded-lg border transition-all text-left ${
                     isSelected
                       ? 'border-[#6d28d9] bg-[#6d28d9]/10'
                       : 'border-[#3d3651] hover:border-[#6d28d9]/50 bg-transparent'

@@ -41,7 +41,7 @@ const SignupForm = () => {
   return (
     <>
       <h1 className="text-2xl font-semibold mb-4 text-center">Sign up for Stride</h1>
-      <div className="w-full mx-auto p-8 rounded-lg border border-purple-400">
+      <div className="w-full max-w-md mx-auto p-4 sm:p-8 rounded-lg border-0 lg:border lg:border-purple-400">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-semibold mb-1" htmlFor="signup-email">

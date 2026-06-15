@@ -54,13 +54,12 @@ export const updateSemester = async (req, res) => {
   console.log("[CONTROLLER LOG] Starting updateSemester execution...");
   try {
     const uid = req.user.uid;
-    const { id } = req.params; // The specific semester ID from the route
+    const { id } = req.params;
     const { title, startDate, endDate, courses } = req.body;
 
     console.log(`[CONTROLLER LOG] Target Semester ID: ${id} | User UID: ${uid}`);
     console.log("[CONTROLLER LOG] Update data payload:", { title, startDate, endDate, courseCount: courses?.length });
 
-    // Find by semester ID AND ensure it belongs to the authenticated user to prevent cross-user mutations
     const updatedSemester = await Semester.findOneAndUpdate(
       { _id: id, userId: uid },
       { 
@@ -69,7 +68,7 @@ export const updateSemester = async (req, res) => {
         endDate, 
         courses 
       },
-      { new: true, runValidators: true } // new: true returns the modified doc rather than the old one
+      { new: true, runValidators: true }
     );
 
     if (!updatedSemester) {
@@ -82,6 +81,47 @@ export const updateSemester = async (req, res) => {
 
   } catch (error) {
     console.error("[CONTROLLER ERROR] Failed to update semester:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const checkSemester = async (req, res) => {
+  console.log("[CONTROLLER LOG] Starting checkSemester execution...");
+  try {
+    const uid = req.user.uid;
+    const { userId } = req.params;
+
+    // Authorization check
+    if (uid !== userId) {
+      console.warn(`[CONTROLLER WARN] Unauthorized semester check attempt. User UID: ${uid}, Target: ${userId}`);
+      return res.status(403).json({ message: "Unauthorized." });
+    }
+
+    console.log(`[CONTROLLER LOG] Checking semester status for user: ${userId}`);
+
+    const semester = await Semester.findOne({ userId });
+
+    if (!semester) {
+      console.log(`[CONTROLLER LOG] No semester found for user: ${userId}`);
+      return res.json({ 
+        hasSemester: false,
+        semester: null
+      });
+    }
+
+    console.log(`[CONTROLLER LOG] Semester found for user: ${userId}, ID: ${semester._id}`);
+    res.json({
+      hasSemester: true,
+      semester: {
+        _id: semester._id,
+        title: semester.title,
+        startDate: semester.startDate,
+        endDate: semester.endDate,
+        courseCount: semester.courses.length
+      }
+    });
+  } catch (error) {
+    console.error("[CONTROLLER ERROR] Failed to check semester:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
