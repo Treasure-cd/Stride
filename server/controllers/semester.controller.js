@@ -49,7 +49,6 @@ export const getSemesters = async (req, res) => {
   }
 };
 
-
 export const updateSemester = async (req, res) => {
   console.log("[CONTROLLER LOG] Starting updateSemester execution...");
   try {
@@ -60,14 +59,16 @@ export const updateSemester = async (req, res) => {
     console.log(`[CONTROLLER LOG] Target Semester ID: ${id} | User UID: ${uid}`);
     console.log("[CONTROLLER LOG] Update data payload:", { title, startDate, endDate, courseCount: courses?.length });
 
+    // Build update object with only provided fields
+    const updateFields = {};
+    if (title !== undefined) updateFields.title = title;
+    if (startDate !== undefined) updateFields.startDate = startDate;
+    if (endDate !== undefined) updateFields.endDate = endDate;
+    if (courses !== undefined) updateFields.courses = courses;
+
     const updatedSemester = await Semester.findOneAndUpdate(
       { _id: id, userId: uid },
-      { 
-        title, 
-        startDate, 
-        endDate, 
-        courses 
-      },
+      updateFields,  // Only the fields that were sent
       { new: true, runValidators: true }
     );
 
@@ -78,13 +79,11 @@ export const updateSemester = async (req, res) => {
 
     console.log("[CONTROLLER LOG] Semester doc successfully updated in DB for ID:", updatedSemester._id);
     res.json(updatedSemester);
-
   } catch (error) {
     console.error("[CONTROLLER ERROR] Failed to update semester:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
-
 export const checkSemester = async (req, res) => {
   console.log("[CONTROLLER LOG] Starting checkSemester execution...");
   try {

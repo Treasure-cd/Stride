@@ -8,6 +8,7 @@ router.use(authenticate);
 
 router.post('/', createSemester);
 router.get('/', getSemesters);
-router.put('/', updateSemester)
+router.put('/:id', updateSemester)
+router.get('/:userId/check', checkSemester);
 
 export default router;
