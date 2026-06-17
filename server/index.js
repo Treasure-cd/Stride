@@ -10,10 +10,15 @@ import generalStudyLinkRouter from './routes/generalStudyLinks.routes.js'
 import topicRouter from './routes/topic.routes.js'
 import moodRouter from './routes/mood.routes.js'
 
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
 app.use('/api/preferences', preferencesRouter);
 app.use('/api/users', userRouter);
 app.use('/api/semesters', semesterRouter);
@@ -23,5 +28,5 @@ app.use('/api/topics', topicRouter);
 app.use('/api/moods', moodRouter);
 
 connectDB().then(() => {
-  app.listen(3000, () => console.log('Server running'));
+  app.listen(PORT, () => console.log('Server running'));
 });
