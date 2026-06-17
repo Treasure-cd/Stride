@@ -2,12 +2,11 @@ import mongoose from 'mongoose';
 
 const noteSchema = new mongoose.Schema({
   userId: { type: String, required: true, index: true },
-  title: { type: String, default: 'Untitled Note' },
+  semesterId: { type: String, required: true, index: true },
   content: { type: String, default: '' },
-  
-
-  isPinned: { type: Boolean, default: false } 
+  color: { type: String, default: '#6d28d9' }
 }, { timestamps: true });
+
 
 noteSchema.pre('save', function() {
   console.log(`[DB LOG] General Note saved/updated for user: ${this.userId} | Pinned: ${this.isPinned}`);

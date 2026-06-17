@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import google from '../../assets/google.png';
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { signInWithPopup } from "firebase/auth";
+import { userApi } from '../../lib/api';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('')
@@ -12,7 +13,10 @@ const LoginForm = () => {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false);
+
   const navigate = useNavigate();
+  const user = userApi.get;
+  
 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

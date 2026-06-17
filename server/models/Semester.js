@@ -38,11 +38,9 @@ const semesterSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre-save hook for logging
-semesterSchema.pre('save', function(next) {
+semesterSchema.pre('save', function() {
   console.log(`[DB LOG] Saving semester: ${this.title} for user: ${this.userId}`);
   console.log(`[DB LOG] Course count: ${this.courses.length}`);
   console.log(`[DB LOG] Validating grading schemes...`);
-  next();
 });
-
 export default mongoose.model('Semester', semesterSchema);

@@ -1,4 +1,4 @@
-import Topic from "../models/Topic.js";
+import Topic from "../models/StudyTask.js";
 
 export const createTopic = async (req, res) => {
   console.log("[CONTROLLER LOG] Starting createTopic execution...");
@@ -36,22 +36,43 @@ export const getTopics = async (req, res) => {
   console.log("[CONTROLLER LOG] Starting getTopics execution...");
   try {
     const uid = req.user.uid;
-    const { courseId, semesterId } = req.query;
+    // 👇 CHANGED: Grab courseId from req.params to match your frontend api.ts
+    const { courseId } = req.params; 
 
-    console.log(`[CONTROLLER LOG] Fetching topics for user: ${uid}`);
-    console.log("[CONTROLLER LOG] Active query filters:", { courseId, semesterId });
+    console.log(`[CONTROLLER LOG] Fetching topics for user: ${uid}, course: ${courseId}`);
 
-    const query = { userId: uid };
-    if (courseId) query.courseId = courseId;
-    if (semesterId) query.semesterId = semesterId;
-
-    const topics = await Topic.find(query).sort({ isCompleted: 1, createdAt: 1 });
+    const topics = await Topic.find({ 
+      userId: uid, 
+      courseId: courseId 
+    }).sort({ isCompleted: 1, createdAt: 1 });
 
     console.log(`[CONTROLLER LOG] Successfully retrieved ${topics.length} topic(s) from DB.`);
     res.json(topics);
 
   } catch (error) {
     console.error("[CONTROLLER ERROR] Failed to fetch topics:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+export const deleteTopic = async (req, res) => {
+  console.log("[CONTROLLER LOG] Starting deleteTopic execution...");
+  try {
+    const uid = req.user.uid;
+    const { id } = req.params;
+
+    const deletedTopic = await Topic.findOneAndDelete({ _id: id, userId: uid });
+
+    if (!deletedTopic) {
+      return res.status(404).json({ message: "Topic not found or unauthorized." });
+    }
+
+    console.log("[CONTROLLER LOG] Topic successfully deleted:", id);
+    res.json({ message: "Topic deleted successfully." });
+
+  } catch (error) {
+    console.error("[CONTROLLER ERROR] Failed to delete topic:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };

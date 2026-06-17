@@ -76,6 +76,7 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
     try {
       await createUser();
       setDisplayName(name);
+      localStorage.setItem("name", name)
       onNext();
     } catch (err: any) {
       console.error("Error creating user:", err);

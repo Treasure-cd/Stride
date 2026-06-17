@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createSemester, getSemesters, updateSemester } from '../controllers/semester.controller.js';
+import { createSemester, getSemesters, updateSemester, checkSemester } from '../controllers/semester.controller.js';
 import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
