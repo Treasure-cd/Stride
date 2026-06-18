@@ -1,0 +1,10 @@
+{
+  "projectName": "stride",
+  "meta": {
+    "type": "backend"
+  },
+  "backend": {
+    "platform": "node16"
+  },
+  "hash": "4e7fa635"
+}
