@@ -167,6 +167,17 @@ export interface MoodTrackerDoc {
   updatedAt?: string
 }
 
+export interface PreferencesDoc {
+  _id: string
+  userId: string
+  disabilities: string[]
+  schedulePreferences: {
+    preferredStudyTime: string
+    maxSessionMinutes: number
+    breakFrequency: string
+  }
+}
+
 export interface MoodStatusResponse {
   hasLoggedToday: boolean
   mood: MoodState | null
@@ -214,6 +225,12 @@ export const userApi = {
   },
   get: () => {
     return apiFetch<UserDoc>('/users')
+  },
+}
+
+export const preferencesApi = {
+  get: () => {
+    return apiFetch<PreferencesDoc>('/preferences')
   },
 }
 
