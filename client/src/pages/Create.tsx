@@ -693,8 +693,23 @@ const Create = () => {
     try {
     if (isEditMode && semesterId) {
         await semesterApi.update(semesterId, buildPayload())
+        pendo.track("semester_updated", {
+          semester_id: semesterId,
+          course_count: courses.length,
+          total_assessment_count: courses.reduce((sum, c) => sum + c.assessments.length, 0),
+          total_study_link_count: courses.reduce((sum, c) => sum + c.studyLinks.length, 0)
+        })
     } else {
         await semesterApi.create(buildPayload())
+        pendo.track("semester_created", {
+          semester_title: title.trim(),
+          course_count: courses.length,
+          total_assessment_count: courses.reduce((sum, c) => sum + c.assessments.length, 0),
+          total_study_link_count: courses.reduce((sum, c) => sum + c.studyLinks.length, 0),
+          semester_duration_days: Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)),
+          start_date: startDate,
+          end_date: endDate
+        })
     }
     navigate('/home')
     } catch (err: any) {
