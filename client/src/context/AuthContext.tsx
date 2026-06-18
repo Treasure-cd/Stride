@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { onAuthStateChanged, User } from 'firebase/auth'
-import { userApi } from '../lib/api'
+import { userApi, preferencesApi } from '../lib/api'
 import { auth } from '../firebase'
 
 type AuthContextType = {
@@ -34,6 +34,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setDisplayName(userData.profile.name);
             localStorage.setItem("name", userData.profile.name); // Keep LS in sync
           }
+
+          let prefsData = null;
+          try {
+            prefsData = await preferencesApi.get();
+          } catch {
+            // Preferences may not exist yet (e.g., during onboarding)
+          }
+
+          pendo.identify({
+            visitor: {
+              id: currentUser.uid,
+              email: userData?.email || '',
+              full_name: userData?.profile?.name || '',
+              createdAt: userData?.createdAt || '',
+              profileName: userData?.profile?.name || '',
+              profileInstitution: userData?.profile?.institution || '',
+              disabilities: prefsData?.disabilities || [],
+              preferredStudyTime: prefsData?.schedulePreferences?.preferredStudyTime || '',
+              maxSessionMinutes: prefsData?.schedulePreferences?.maxSessionMinutes || 0,
+              breakFrequency: prefsData?.schedulePreferences?.breakFrequency || '',
+            }
+          });
         } catch (error) {
           console.error("Failed to fetch user profile", error);
         }
