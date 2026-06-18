@@ -1,3 +1,4 @@
 strideServiceKey.json
 .env
 MONGODB_OPERATORS_REFERENCE.js
+env.yaml
