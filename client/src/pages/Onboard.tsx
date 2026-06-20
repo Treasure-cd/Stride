@@ -49,7 +49,9 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
 const handleCompleted = () => {
     setBarColor("#10b981") 
-    
+    pendo.track("onboarding_completed", {
+      step_count: 2
+    })
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }

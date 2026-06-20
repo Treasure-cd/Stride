@@ -119,6 +119,12 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
 
     try {
       await addPreferences()
+      pendo.track("learning_profile_saved", {
+        selected_profiles: selectedProfiles.join(", "),
+        selected_profile_count: selectedProfiles.length,
+        learning_context_count: Object.values(learningContext).filter(Boolean).length,
+        includes_standard_track: selectedProfiles.includes("Standard Track")
+      })
       onNext()
     } catch (err: any) {
       console.error("Error saving preferences:", err)

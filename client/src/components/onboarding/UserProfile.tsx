@@ -77,6 +77,10 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
 
     try {
       await createUser();
+      pendo.track("user_profile_created", {
+        institution: institution,
+        has_name: Boolean(name.trim())
+      })
       setDisplayName(name);
       localStorage.setItem("name", name)
       onNext();

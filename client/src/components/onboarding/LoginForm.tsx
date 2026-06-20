@@ -27,6 +27,9 @@ const LoginForm = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       console.log('Logged in:', userCredential.user)
+      pendo.track("user_logged_in", {
+        auth_method: "email"
+      })
       navigate('/home')
     } catch (authError) {
       console.error(authError)
@@ -44,6 +47,9 @@ async function handleGoogleAuth() {
   try {
     const result = await signInWithPopup(auth, provider);
     console.log('Logged in with Google Popup:', result.user);
+    pendo.track("user_logged_in_google", {
+      auth_method: "google"
+    })
     navigate('/home');
   } catch (error) {
     console.error(error);

@@ -29,6 +29,9 @@ const SignupForm = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       console.log('Signed up:', userCredential.user)
+      pendo.track("user_signed_up", {
+        auth_method: "email"
+      })
       navigate('/onboarding')
     } catch (authError) {
       console.error(authError)

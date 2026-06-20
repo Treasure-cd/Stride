@@ -756,6 +756,9 @@ useEffect(() => {
 const handleLogMood = async (mood: MoodState) => {
   try {
     await moodApi.logMood({ mood })
+    pendo.track("mood_logged", {
+      mood_state: mood
+    })
     setTodayMood(mood)
   } catch (err) {
     console.error('Could not save mood:', err)
@@ -854,6 +857,11 @@ useEffect(() => {
         content: newNoteContent.trim(),
         color: newNoteColor,
       })
+      pendo.track("note_created", {
+        semester_id: semester._id,
+        note_color: newNoteColor,
+        content_length: newNoteContent.trim().length
+      })
       setNotes((prev) => [note, ...prev])
       setNewNoteContent('')
       setIsAddingNote(false)
@@ -867,6 +875,9 @@ useEffect(() => {
   const handleDeleteNote = async (id: string) => {
     try {
       await noteApi.remove(id)
+      pendo.track("note_deleted", {
+        note_id: id
+      })
       setNotes((prev) => prev.filter((note) => note._id !== id))
     } catch (err) {
       console.error('Failed to delete note:', err)
@@ -882,6 +893,13 @@ useEffect(() => {
         title: newLinkTitle.trim(),
         url: newLinkUrl.trim(),
       })
+      let linkDomain = "unknown"
+      try { linkDomain = new URL(newLinkUrl.trim()).hostname } catch { /* ignore */ }
+      pendo.track("study_link_added", {
+        semester_id: semester._id,
+        link_title: newLinkTitle.trim(),
+        link_url_domain: linkDomain
+      })
       setLinks((prev) => [link, ...prev])
       setNewLinkTitle('')
       setNewLinkUrl('')
@@ -896,6 +914,9 @@ useEffect(() => {
   const handleDeleteLink = async (id: string) => {
     try {
       await generalStudyLinkApi.remove(id)
+      pendo.track("study_link_deleted", {
+        link_id: id
+      })
       setLinks((prev) => prev.filter((link) => link._id !== id))
     } catch (err) {
       console.error('Failed to delete link:', err)
@@ -912,6 +933,12 @@ useEffect(() => {
         title: newTopicTitle.trim(),
         status: newTopicStatus,
         resourceLink: newTopicResource.trim() || undefined,
+      })
+      pendo.track("topic_created", {
+        course_id: selectedCourseId,
+        semester_id: semester._id,
+        topic_status: newTopicStatus,
+        has_resource_link: Boolean(newTopicResource.trim())
       })
       setTopicsByCourse((prev) => ({
         ...prev,
@@ -932,6 +959,13 @@ useEffect(() => {
     if (!selectedCourseId) return
     try {
       const updated = await topicApi.update(topic._id, { isCompleted: !topic.isCompleted })
+      if (!topic.isCompleted) {
+        pendo.track("topic_completed", {
+          course_id: selectedCourseId,
+          topic_id: topic._id,
+          topic_title: topic.title
+        })
+      }
       setTopicsByCourse((prev) => ({
         ...prev,
         [selectedCourseId]: prev[selectedCourseId].map((t) => (t._id === topic._id ? updated : t)),
@@ -946,6 +980,12 @@ useEffect(() => {
     if (!selectedCourseId) return
     try {
       const updated = await topicApi.update(topic._id, { status })
+      pendo.track("topic_status_changed", {
+        course_id: selectedCourseId,
+        topic_id: topic._id,
+        old_status: topic.status,
+        new_status: status
+      })
       setTopicsByCourse((prev) => ({
         ...prev,
         [selectedCourseId]: prev[selectedCourseId].map((t) => (t._id === topic._id ? updated : t)),
@@ -980,6 +1020,10 @@ useEffect(() => {
     if (!selectedCourseId) return
     try {
       await topicApi.remove(topicId)
+      pendo.track("topic_deleted", {
+        course_id: selectedCourseId,
+        topic_id: topicId
+      })
       setTopicsByCourse((prev) => ({
         ...prev,
         [selectedCourseId]: prev[selectedCourseId].filter((t) => t._id !== topicId),
