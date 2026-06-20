@@ -49,7 +49,7 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
         },
         };
 
-        const response = await fetch(`${BASE_URL}/user`, {
+        const response = await fetch(`${BASE_URL}/users`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -58,10 +58,22 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
         body: JSON.stringify(payload),
         });
 
-        if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Failed to save profile data.");
-        }
+if (!response.ok) {
+    // 1. Get the raw text first to see if it's HTML or JSON
+    const errorText = await response.text(); 
+    console.log("Raw Server Error Response:", errorText);
+
+    // 2. Try to parse it safely
+    let errorMessage = "Failed to save profile data.";
+    try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData?.message || errorMessage;
+    } catch (e) {
+        errorMessage = `Server error (${response.status}): ${errorText.substring(0, 100)}`;
+    }
+    
+    throw new Error(errorMessage);
+}
 
         return await response.json();
     };
