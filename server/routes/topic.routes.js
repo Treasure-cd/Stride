@@ -3,7 +3,8 @@ import {
   createTopic, 
   getTopics, 
   updateTopic, 
-  deleteTopic 
+  deleteTopic, 
+  getAllTopics
 } from '../controllers/topic.controller.js';
 import { authenticate } from '../middleware/auth.js';
 
@@ -14,5 +15,6 @@ router.get('/course/:courseId', getTopics);
 router.post('/', createTopic);
 router.put('/:id', updateTopic);
 router.delete('/:id', deleteTopic);
+router.get('/', getAllTopics)
 
 export default router;

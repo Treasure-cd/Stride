@@ -1,5 +1,6 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import OnboardingFlow from './pages/Onboard'
 
 import Home from './pages/Home'
@@ -8,6 +9,18 @@ import AuthCheck from './pages/AuthCheck'
 import Create from './pages/Create'
 
 export default function App() {
+
+  const { preferences } = useAuth();
+
+  useEffect(() => {
+  const isDyslexic = preferences?.disabilities.includes('dyslexia');
+  
+  if (isDyslexic) {
+    document.documentElement.setAttribute('data-accessibility', 'dyslexic');
+  } else {
+    document.documentElement.removeAttribute('data-accessibility');
+  }
+}, [preferences]);
 
   return (
     <>

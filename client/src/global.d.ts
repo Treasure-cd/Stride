@@ -8,3 +8,4 @@ declare module '*.module.scss'
 declare const pendo: {
   track: (eventName: string, properties?: Record<string, unknown>) => void
 }
+declare var pendo: any;

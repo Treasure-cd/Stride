@@ -54,6 +54,8 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
   // Local state for the API call
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+    const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL;
+
 
   const toggleProfile = (profile: LearningProfile) => {
     const isSelected = selectedProfiles.includes(profile)
@@ -96,7 +98,7 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
       learningContext: learningContext
     }
 
-    const response = await fetch('http://localhost:3000/api/preferences', {
+    const response = await fetch(`${BASE_URL}/preferences`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

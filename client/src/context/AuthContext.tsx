@@ -1,25 +1,35 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { onAuthStateChanged, User } from 'firebase/auth'
-import { userApi } from '../lib/api'
+import { userApi, preferencesApi } from '../lib/api'
 import { auth } from '../firebase'
+import { PreferencesDoc } from '../lib/api'
+
 
 type AuthContextType = {
-  user: User | null
-  loading: boolean
+  user: User | null;
+  loading: boolean;
   displayName: string;
-}
+  preferences: PreferencesDoc | null
+};
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   displayName: "",
+  preferences: null
 })
+
+
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   // Initialize with localStorage if it exists so there's no UI flicker
   const [displayName, setDisplayName] = useState(localStorage.getItem("name") || "")
+  const [preferences, setPreferences] = useState<PreferencesDoc | null>(() => {
+    const saved = localStorage.getItem("user_prefs");
+    return saved ? JSON.parse(saved) : null;
+  });
 
   useEffect(() => {
     // onAuthStateChanged manages its own listeners, we only need to mount this once.
@@ -34,6 +44,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setDisplayName(userData.profile.name);
             localStorage.setItem("name", userData.profile.name); // Keep LS in sync
           }
+
+  let prefsData = null;
+          try {
+            prefsData = await preferencesApi.get();
+            if (prefsData) {
+              setPreferences(prefsData);
+              localStorage.setItem("user_prefs", JSON.stringify(prefsData)); // Sync local storage
+              console.log(prefsData);
+            }
+          } catch {
+            // Preferences may not exist yet (e.g., during onboarding)
+          }
+
+          pendo.identify({
+            visitor: {
+              id: currentUser.uid,
+              email: userData?.email || '',
+              full_name: userData?.profile?.name || '',
+              createdAt: userData?.createdAt || '',
+              profileName: userData?.profile?.name || '',
+              profileInstitution: userData?.profile?.institution || '',
+              disabilities: prefsData?.disabilities || [],
+              preferredStudyTime: prefsData?.schedulePreferences?.preferredStudyTime || '',
+              maxSessionMinutes: prefsData?.schedulePreferences?.maxSessionMinutes || 0,
+              breakFrequency: prefsData?.schedulePreferences?.breakFrequency || '',
+            }
+          });
         } catch (error) {
           console.error("Failed to fetch user profile", error);
         }
@@ -51,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []) // <-- CRITICAL: Remove `user` from here to prevent infinite re-renders
 
   return (
-    <AuthContext.Provider value={{ user, loading, displayName }}>
+    <AuthContext.Provider value={{ user, loading, displayName, preferences }}>
       {children}
     </AuthContext.Provider>
   )

@@ -6,7 +6,8 @@ import {
   topicApi,
   noteApi,
   generalStudyLinkApi,
-  moodApi
+  moodApi,
+  assessmentApi
 } from '../lib/api'
 import type {
   SemesterDoc,
@@ -15,13 +16,16 @@ import type {
   TopicStatus,
   Note,
   GeneralStudyLink,
-  MoodState
+  MoodState,
+  PreferencesDoc
 } from '../lib/api'
 import { useAuth } from '../context/AuthContext';
 import CourseEditModal from '../components/layout/CourseEditModal'
 import Navbar from '../components/layout/Navbar'
 import MoodChecker from '../components/layout/MoodChecker'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { RecommendationsSection } from '../components/layout/RecommendationsPanel'
+import { celebrate } from '../lib/celebrate'
 
 const Spinner = ({ size = 20 }: { size?: number }) => (
   <svg className="animate-spin text-[#6d28d9]" style={{ height: size, width: size }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -212,6 +216,11 @@ function HomePanel({
 
   return (
     <div className="flex flex-col gap-8">
+      <RecommendationsSection />
+      {!todayMood && (
+        <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} />
+      )}
+
       {!todayMood && (
       <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} />
     )}
@@ -385,6 +394,16 @@ interface CoursePanelProps {
   onChangeStatus: (topic: Topic, status: TopicStatus) => void
   onDeleteTopic: (id: string) => void
   onEditCourse: () => void
+  isAddingAssessment: boolean
+setIsAddingAssessment: (v: boolean) => void
+newAssessmentTitle: string
+setNewAssessmentTitle: (v: string) => void
+newAssessmentDueDate: string
+setNewAssessmentDueDate: (v: string) => void
+newAssessmentWeight: string
+setNewAssessmentWeight: (v: string) => void
+savingAssessment: boolean
+onAddAssessment: () => void
 }
 
 function CoursePanel({
@@ -405,6 +424,17 @@ function CoursePanel({
   onChangeStatus,
   onDeleteTopic,
   onEditCourse,
+  isAddingAssessment,
+  setIsAddingAssessment,
+  newAssessmentTitle,
+  newAssessmentWeight,
+  newAssessmentDueDate,
+  setNewAssessmentDueDate,
+  setNewAssessmentTitle,
+  setNewAssessmentWeight,
+  onAddAssessment,
+  savingAssessment,
+
 }: CoursePanelProps) {
   const caPercent = course.gradingScheme.continuousAssessment
   const examPercent = course.gradingScheme.exam
@@ -440,26 +470,84 @@ function CoursePanel({
         </div>
       </div>
 
-      <div className="rounded-lg border border-[#3d3651] p-5">
-        <h3 className="text-sm font-semibold text-[#f5f5f5] mb-3">Assessments</h3>
-        {course.assessments.length === 0 ? (
-          <p className="text-xs text-[#6b6580]">No assessments added yet.</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {course.assessments.map((assessment) => (
-              <div key={assessment._id} className="flex items-center justify-between gap-3 text-sm">
-                <span className="text-[#f5f5f5] truncate">{assessment.title}</span>
-                <span className="text-[#b0b0b0] text-xs shrink-0 text-right">
-                  {new Date(assessment.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {assessment.weight}%
-                  {assessment.scoreAchieved != null ? ` · scored ${assessment.scoreAchieved}%` : ''}
-                  {assessment.isCompleted ? ' · done' : ''}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+<div className="rounded-lg border border-[#3d3651] p-5">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="text-sm font-semibold text-[#f5f5f5]">Assessments</h3>
+    {!isAddingAssessment && (
+      <button
+        type="button"
+        onClick={() => setIsAddingAssessment(true)}
+        className="flex items-center gap-1 text-sm text-[#6d28d9] hover:opacity-70"
+      >
+        <MdAdd size={16} /> Add assessment
+      </button>
+    )}
+  </div>
 
+  {isAddingAssessment && (
+    <div className="rounded-lg border border-dashed border-[#3d3651] p-4 mb-4 flex flex-col gap-3">
+      <input
+        type="text"
+        value={newAssessmentTitle}
+        onChange={(e) => setNewAssessmentTitle(e.target.value)}
+        placeholder="e.g. Mid-semester test"
+        autoFocus
+        className="w-full rounded-md border border-[#3d3651] bg-transparent px-3 py-2 text-sm text-[#f5f5f5] placeholder:text-[#6b6580] focus:border-[#6d28d9] outline-none"
+      />
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input
+          type="date"
+          value={newAssessmentDueDate}
+          onChange={(e) => setNewAssessmentDueDate(e.target.value)}
+          className="flex-1 rounded-md border border-[#3d3651] bg-transparent px-3 py-2 text-sm text-[#f5f5f5] focus:border-[#6d28d9] outline-none"
+        />
+        <input
+          type="number"
+          value={newAssessmentWeight}
+          onChange={(e) => setNewAssessmentWeight(e.target.value)}
+          placeholder="Weight (%)"
+          min={1}
+          max={100}
+          className="w-full sm:w-32 rounded-md border border-[#3d3651] bg-transparent px-3 py-2 text-sm text-[#f5f5f5] placeholder:text-[#6b6580] focus:border-[#6d28d9] outline-none"
+        />
+      </div>
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => setIsAddingAssessment(false)}
+          className="text-xs text-[#b0b0b0] hover:opacity-70 px-3 py-1.5"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onAddAssessment}
+          disabled={savingAssessment || !newAssessmentTitle.trim() || !newAssessmentDueDate || !newAssessmentWeight}
+          className="text-xs font-medium text-white bg-[#6d28d9] hover:bg-[#7c3aed] disabled:opacity-50 rounded-md px-3 py-1.5"
+        >
+          {savingAssessment ? 'Saving…' : 'Add assessment'}
+        </button>
+      </div>
+    </div>
+  )}
+
+  {course.assessments.length === 0 ? (
+    <p className="text-xs text-[#6b6580]">No assessments added yet.</p>
+  ) : (
+    <div className="flex flex-col gap-2">
+      {course.assessments.map((assessment) => (
+        <div key={assessment._id} className="flex items-center justify-between gap-3 text-sm">
+          <span className="text-[#f5f5f5] truncate">{assessment.title}</span>
+          <span className="text-[#b0b0b0] text-xs shrink-0 text-right">
+            {new Date(assessment.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {assessment.weight}%
+            {assessment.scoreAchieved != null ? ` · scored ${assessment.scoreAchieved}%` : ''}
+            {assessment.isCompleted ? ' · done' : ''}
+          </span>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
       {course.studyLinks.length > 0 && (
         <div className="rounded-lg border border-[#3d3651] p-5">
           <h3 className="text-sm font-semibold text-[#f5f5f5] mb-3">Course links</h3>
@@ -633,8 +721,25 @@ const Home = () => {
   const [todayMood, setTodayMood] = useState<MoodState | null>(null)
 const [moodLoading, setMoodLoading] = useState(true)
 
+const [isAddingAssessment, setIsAddingAssessment] = useState(false)
+const [newAssessmentTitle, setNewAssessmentTitle] = useState('')
+const [newAssessmentDueDate, setNewAssessmentDueDate] = useState('')
+const [newAssessmentWeight, setNewAssessmentWeight] = useState('')
+const [savingAssessment, setSavingAssessment] = useState(false)
+
   const [now, setNow] = useState(new Date())
-  const { user, loading: authLoading } = useAuth();
+const { user, loading: authLoading, preferences } = useAuth();
+
+const ADAPTIVE_DISABILITIES = [
+  'Focus & Attention',
+  'Anxiety & Overwhelm',
+  'Reading & Writing',
+  'Energy & Pacing',
+]
+
+const showRecommendations = preferences?.disabilities?.some((d) =>
+  ADAPTIVE_DISABILITIES.includes(d)
+) ?? false
 
 useEffect(() => {
   const auth = getAuth()
@@ -677,7 +782,6 @@ const handleLogMood = async (mood: MoodState) => {
       try {
         const semesters = await semesterApi.getAll()
         if (semesters.length === 0) {
-          navigate('/create')
           return
         }
         const today = new Date()
@@ -734,15 +838,15 @@ useEffect(() => {
     loadTopics()
   }, [selectedCourseId, topicsByCourse])
 
-  const handleSelectCourse = (courseId: string | null) => {
-    if (courseId) {
-      setSelectedCourseId(courseId)
-    } else {
-      setSelectedCourseId(null)
+    const handleSelectCourse = (courseId: string | null) => {
+      if (courseId) {
+        setSelectedCourseId(courseId)
+      } else {
+        setSelectedCourseId(null)
+      }
+      setIsAddingTopic(false)
+      setIsAddingAssessment(false)
     }
-    
-    setIsAddingTopic(false)
-  }
 
   const handleAddNote = async () => {
     if (!semester || !newNoteContent.trim()) return
@@ -866,6 +970,7 @@ useEffect(() => {
         ...prev,
         [selectedCourseId]: prev[selectedCourseId].map((t) => (t._id === topic._id ? updated : t)),
       }))
+      if (updated.isCompleted) celebrate()
     } catch (err) {
       console.error('Failed to update topic:', err)
     }
@@ -889,6 +994,27 @@ useEffect(() => {
       console.error('Failed to update topic status:', err)
     }
   }
+
+  const handleAddAssessment = async () => {
+  if (!semester || !selectedCourseId || !user?.uid || !newAssessmentTitle.trim() || !newAssessmentDueDate || !newAssessmentWeight) return
+  setSavingAssessment(true)
+  try {
+    const updatedSemester = await assessmentApi.create(user.uid, selectedCourseId, {
+      title: newAssessmentTitle.trim(),
+      dueDate: newAssessmentDueDate,
+      weight: Number(newAssessmentWeight),
+    })
+    setSemester(updatedSemester)
+    setNewAssessmentTitle('')
+    setNewAssessmentDueDate('')
+    setNewAssessmentWeight('')
+    setIsAddingAssessment(false)
+  } catch (err) {
+    console.error('Failed to create assessment:', err)
+  } finally {
+    setSavingAssessment(false)
+  }
+}
 
   const handleDeleteTopic = async (topicId: string) => {
     if (!selectedCourseId) return
@@ -917,14 +1043,22 @@ useEffect(() => {
 
   if (semesterError || !semester) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
+      <>
+       <Navbar />
+             <div className="min-h-screen flex items-center justify-center px-6">
+       
         <div className="text-center flex flex-col gap-3">
           <p className="text-[#f5f5f5]">{semesterError || 'No semester found.'}</p>
-          <button type="button" onClick={() => navigate('/create')} className="text-sm text-[#6d28d9] hover:opacity-70">
-            Set up a semester
-          </button>
+        <button
+        onClick={() => navigate('/create')} 
+          className="w-full rounded-md p-5 bg-purple-600 text-white py-2 font-semibold disabled:opacity-50 hover:opacity-50 cursor:pointer"
+        >
+         Set up a semester
+        </button>
         </div>
       </div>
+      </>
+
     )
   }
 
@@ -994,35 +1128,46 @@ useEffect(() => {
                 onChangeStatus={handleChangeTopicStatus}
                 onDeleteTopic={handleDeleteTopic}
                 onEditCourse={() => setEditingCourse(selectedCourse)}
+                isAddingAssessment={isAddingAssessment}
+                setIsAddingAssessment={setIsAddingAssessment}
+                newAssessmentTitle={newAssessmentTitle}
+                setNewAssessmentTitle={setNewAssessmentTitle}
+                newAssessmentDueDate={newAssessmentDueDate}
+                setNewAssessmentDueDate={setNewAssessmentDueDate}
+                newAssessmentWeight={newAssessmentWeight}
+                setNewAssessmentWeight={setNewAssessmentWeight}
+                savingAssessment={savingAssessment}
+                onAddAssessment={handleAddAssessment}
               />
             ) : (
-              <HomePanel
-                notes={notes}
-                notesLoading={notesLoading}
-                isAddingNote={isAddingNote}
-                setIsAddingNote={setIsAddingNote}
-                newNoteContent={newNoteContent}
-                setNewNoteContent={setNewNoteContent}
-                newNoteColor={newNoteColor}
-                setNewNoteColor={setNewNoteColor}
-                savingNote={savingNote}
-                onAddNote={handleAddNote}
-                onDeleteNote={handleDeleteNote}
-                links={links}
-                linksLoading={linksLoading}
-                isAddingLink={isAddingLink}
-                setIsAddingLink={setIsAddingLink}
-                newLinkTitle={newLinkTitle}
-                setNewLinkTitle={setNewLinkTitle}
-                newLinkUrl={newLinkUrl}
-                setNewLinkUrl={setNewLinkUrl}
-                savingLink={savingLink}
-                onAddLink={handleAddLink}
-                onDeleteLink={handleDeleteLink}
-                todayMood={todayMood}
-                moodLoading={moodLoading}
-                onLogMood={handleLogMood}
-              />
+
+          <HomePanel
+          notes={notes}
+          notesLoading={notesLoading}
+          isAddingNote={isAddingNote}
+          setIsAddingNote={setIsAddingNote}
+          newNoteContent={newNoteContent}
+          setNewNoteContent={setNewNoteContent}
+          newNoteColor={newNoteColor}
+          setNewNoteColor={setNewNoteColor}
+          savingNote={savingNote}
+          onAddNote={handleAddNote}
+          onDeleteNote={handleDeleteNote}
+          links={links}
+          linksLoading={linksLoading}
+          isAddingLink={isAddingLink}
+          setIsAddingLink={setIsAddingLink}
+          newLinkTitle={newLinkTitle}
+          setNewLinkTitle={setNewLinkTitle}
+          newLinkUrl={newLinkUrl}
+          setNewLinkUrl={setNewLinkUrl}
+          savingLink={savingLink}
+          onAddLink={handleAddLink}
+          onDeleteLink={handleDeleteLink}
+          todayMood={todayMood}
+          moodLoading={moodLoading}
+          onLogMood={handleLogMood}
+        />
             )}
           </div>
 

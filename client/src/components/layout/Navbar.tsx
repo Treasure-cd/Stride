@@ -10,6 +10,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      pendo.clearSession();
       await signOut(auth)
       navigate('/auth')
     } catch (err) {
@@ -26,7 +27,7 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-4 sm:gap-6">
-        <span className="text-sm font-medium text-[#b0b0b0]">
+        <span className="text-sm font-extrabold text-[#b0b0b0]">
           {/* Failsafe fallback to 'User' just in case */}
           Hi, <span className="text-[#f5f5f5]">{displayName || 'User'}</span>!
         </span>

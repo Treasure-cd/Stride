@@ -1,6 +1,6 @@
 import { getAuth } from 'firebase/auth'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_PROD_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL;
 
 export interface UserProfile {
   name: string
@@ -28,6 +28,14 @@ export interface Assessment {
   scoreAchieved?: number
   isCompleted: boolean
 }
+
+export interface CreateAssessmentPayload {
+  title: string
+  dueDate: string
+  weight: number
+}
+
+export type UpdateAssessmentPayload = Partial<Assessment>
 
 export interface StudyLink {
   _id?: string
@@ -167,6 +175,55 @@ export interface MoodTrackerDoc {
   updatedAt?: string
 }
 
+export interface PreferencesDoc {
+  _id: string
+  userId: string
+  disabilities: string[]
+  schedulePreferences: {
+    preferredStudyTime: string
+    maxSessionMinutes: number
+    breakFrequency: string
+  }
+}
+
+export interface RecommendationAssessmentData {
+  _id: string
+  title: string
+  dueDate: string
+  weight: number
+  courseId: string
+  courseName: string
+  semesterId: string
+  daysUntilDue: number
+  isCompleted: boolean
+}
+
+export interface RecommendationTopicData {
+  _id: string
+  title: string
+  courseId: string
+  resourceLink?: string
+  status: TopicStatus
+}
+
+export interface RecommendationQuizData {
+  topicTitle: string
+}
+
+export interface RecommendationTask {
+  type: 'topic' | 'quiz' | 'assessment' | 'rest'
+  data?: RecommendationAssessmentData | RecommendationTopicData | RecommendationQuizData
+  reason: string
+}
+
+export interface RecommendationsResponse {
+  mood: MoodState
+  message: string
+  tasks: RecommendationTask[]
+}
+
+
+
 export interface MoodStatusResponse {
   hasLoggedToday: boolean
   mood: MoodState | null
@@ -217,6 +274,12 @@ export const userApi = {
   },
 }
 
+export const preferencesApi = {
+  get: () => {
+    return apiFetch<PreferencesDoc>('/preferences')
+  },
+}
+
 export const semesterApi = {
   create: (payload: CreateSemesterPayload) => {
     return apiFetch<SemesterDoc>('/semesters', {
@@ -242,7 +305,7 @@ export type UpdateCoursePayload = Omit<Course, '_id'>
 
 export const courseApi = {
   update: (userId: string, courseId: string, payload: UpdateCoursePayload) => {
-    return apiFetch<SemesterDoc>(`/semesters/${userId}/courses/${courseId}`, {
+    return apiFetch<SemesterDoc>(`/courses/${userId}/courses/${courseId}`, {
       method: 'PUT',
       body: JSON.stringify(payload),
     })
@@ -319,4 +382,28 @@ export const moodApi = {
       body: JSON.stringify(payload),
     })
   },
+}
+
+export const assessmentApi = {
+  create: (userId: string, courseId: string, payload: CreateAssessmentPayload) => {
+    return apiFetch<SemesterDoc>(`/assessments/${userId}/courses/${courseId}/assessments`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+  update: (userId: string, courseId: string, assessmentId: string, payload: UpdateAssessmentPayload) => {
+    return apiFetch<SemesterDoc>(`/assessments/${userId}/courses/${courseId}/assessments/${assessmentId}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    })
+  },
+  remove: (userId: string, courseId: string, assessmentId: string) => {
+    return apiFetch<SemesterDoc>(`/assessments/${userId}/courses/${courseId}/assessments/${assessmentId}`, {
+      method: 'DELETE',
+    })
+  },
+}
+
+export const recommendationsApi = {
+  get: () => apiFetch<RecommendationsResponse>('/recommendations'),
 }
