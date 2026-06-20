@@ -17,6 +17,16 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 
+app.use((req, res, next) => {
+    console.log(`\n--- 🚨 INCOMING REQUEST 🚨 ---`);
+    console.log(`Method: ${req.method}`);
+    console.log(`URL: ${req.originalUrl}`);
+    console.log(`Headers:`, JSON.stringify(req.headers, null, 2));
+    console.log(`Body:`, JSON.stringify(req.body, null, 2));
+    console.log(`-----------------------------\n`);
+    next();
+});
+
 app.use(express.json());
 app.use(cors());
 app.get("/", (req, res) => {

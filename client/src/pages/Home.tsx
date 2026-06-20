@@ -221,9 +221,7 @@ function HomePanel({
         <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} />
       )}
 
-      {!todayMood && (
-      <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} />
-    )}
+
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-medium text-[#f5f5f5]">Notes</h2>
