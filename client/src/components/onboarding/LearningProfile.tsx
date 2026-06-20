@@ -54,7 +54,7 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
   // Local state for the API call
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-    const BASE_URL = import.meta.env.VITE_API_BASE_PROD_URL;
+    const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL;
 
 
   const toggleProfile = (profile: LearningProfile) => {

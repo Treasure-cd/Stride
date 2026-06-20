@@ -36,7 +36,6 @@ export const getTopics = async (req, res) => {
   console.log("[CONTROLLER LOG] Starting getTopics execution...");
   try {
     const uid = req.user.uid;
-    // 👇 CHANGED: Grab courseId from req.params to match your frontend api.ts
     const { courseId } = req.params; 
 
     console.log(`[CONTROLLER LOG] Fetching topics for user: ${uid}, course: ${courseId}`);
@@ -54,6 +53,8 @@ export const getTopics = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
 
 
 export const deleteTopic = async (req, res) => {
@@ -115,6 +116,23 @@ export const updateTopic = async (req, res) => {
 
   } catch (error) {
     console.error("[CONTROLLER ERROR] Failed to update topic:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export const getAllTopics = async (req, res) => {
+  console.log("[CONTROLLER LOG] Starting getAllTopics execution...");
+  try {
+    const uid = req.user.uid;
+    console.log(`[CONTROLLER LOG] Fetching all topics for user: ${uid}`);
+
+    const topics = await Topic.find({ userId: uid })
+      .sort({ isCompleted: 1, createdAt: 1 });
+
+    console.log(`[CONTROLLER LOG] Successfully retrieved ${topics.length} topic(s) for user.`);
+    res.json(topics);
+  } catch (error) {
+    console.error("[CONTROLLER ERROR] Failed to fetch all topics:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };

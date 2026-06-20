@@ -130,3 +130,32 @@ export const deleteAssessment = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export const getAllAssessments = async (req, res) => {
+  console.log("[CONTROLLER LOG] Starting getAllAssessments execution...");
+  try {
+    const uid = req.user.uid;
+    console.log(`[CONTROLLER LOG] Fetching all assessments for user: ${uid}`);
+
+    const semesters = await Semester.find({ userId: uid });
+
+    const assessments = semesters.flatMap((semester) =>
+      semester.courses.flatMap((course) =>
+        course.assessments.map((assessment) => ({
+          ...assessment.toObject(),
+          courseId: course._id,
+          courseName: course.name,
+          semesterId: semester._id,
+          semesterTitle: semester.title,
+        }))
+      )
+    );
+
+    console.log(`[CONTROLLER LOG] Successfully retrieved ${assessments.length} assessment(s) for user.`);
+    res.json(assessments);
+  } catch (error) {
+    console.error("[CONTROLLER ERROR] Failed to fetch assessments:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createCourse, updateCourse, deleteCourse } from "../controllers/courses.controller";
-import { authenticate } from "../middleware/auth";
+import { createCourse, updateCourse, deleteCourse } from '../controllers/courses.controller.js'
+import { authenticate } from "../middleware/auth.js";
 
 const router = Router();
 

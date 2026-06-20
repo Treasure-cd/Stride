@@ -21,8 +21,6 @@ export default function MoodChecker({
     const logged = MOODS.find((m) => m.value === todayMood)!
     return (
       <div className="flex items-center gap-2 text-sm text-bold text-[#b0b0b0]">
-        <span>{logged.emoji}</span>
-        <span>Feeling... <span className="text-[#f5f5f5]">{logged.label}</span> today</span>
       </div>
     )
   }

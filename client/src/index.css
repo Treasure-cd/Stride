@@ -10,8 +10,12 @@
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
 
-  font-family: 'Geist', system-ui;
-  letter-spacing: 0.18px;
+  /* Set the default font variable */
+  --font-main: 'Geist', system-ui;
+  --letter-spacing: 0.18px;
+
+  font-family: var(--font-main);
+  letter-spacing: var(--letter-spacing);
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
@@ -25,6 +29,12 @@
   }
 }
 
+
+:root[data-accessibility="dyslexic"] {
+  --font-main: 'Comic Neue', sans-serif;
+  --letter-spacing: 0.35px; 
+  line-height: 1.6;
+}
 
 #pattern-div {
   background-color: #1e1b2e;
