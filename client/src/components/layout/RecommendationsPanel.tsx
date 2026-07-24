@@ -2,7 +2,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { recommendationsApi } from '../../lib/api'
 import type { RecommendationsResponse, RecommendationTask } from '../../lib/api'
 import { useState, useEffect } from 'react'
-import { MdOutlineMenuBook, MdOutlineChecklist, MdOutlineBedtime, MdOutlineWarningAmber } from 'react-icons/md'
+import { BooksIcon, ListChecksIcon, BedIcon, WarningIcon } from '../../lib/icons'
 import { useAuth } from '../../context/AuthContext'
 
 
@@ -20,25 +20,25 @@ function getTaskPriority(task: RecommendationTask, prioritizeAssessments: boolea
 const TASK_CONFIG = {
   topic: {
     label: 'Topic',
-    icon: <MdOutlineMenuBook size={16} />,
+    icon: <BooksIcon size={16} />,
     iconClass: 'b] text-[#a78bfa]',
     labelClass: 'text-[#a78bfa]',
   },
   quiz: {
     label: 'Quiz',
-    icon: <MdOutlineChecklist size={16} />,
+    icon: <ListChecksIcon size={16} />,
     iconClass: 'bg-[#1e2a1e] text-[#6ee7b7]',
     labelClass: 'text-[#6ee7b7]',
   },
   assessment: {
     label: 'Assessment',
-    icon: <MdOutlineWarningAmber size={16} />,
+    icon: <WarningIcon size={16} />,
     iconClass: 'bg-[#2d1a1a] text-[#f87171]',
     labelClass: 'text-[#f87171]',
   },
   rest: {
     label: 'Rest',
-    icon: <MdOutlineBedtime size={16} />,
+    icon: <BedIcon size={16} />,
     iconClass: 'bg-[#1a2535] text-[#93c5fd]',
     labelClass: 'text-[#93c5fd]',
   },

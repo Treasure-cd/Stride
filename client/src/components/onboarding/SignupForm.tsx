@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../firebase'
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import { EyeIcon, EyeSlashIcon } from '../../lib/icons'
 import { useNavigate } from 'react-router-dom'
 import google from '../../assets/google.png'
 
@@ -15,7 +15,7 @@ const SignupForm = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
 
@@ -82,9 +82,9 @@ const SignupForm = () => {
             className="absolute right-3 top-9.5 text-gray-500 hover:text-black"
           >
             {showPassword ? (
-              <MdVisibilityOff size={20} />
+              <EyeSlashIcon size={20} />
             ) : (
-              <MdVisibility size={20} />
+              <EyeIcon size={20} />
             )}
           </button>
         </div>  
@@ -113,9 +113,9 @@ const SignupForm = () => {
             className="absolute right-3 top-9.5 text-gray-500 hover:text-black"
           >
             {showConfirmPassword ? (
-              <MdVisibilityOff size={20} />
+              <EyeSlashIcon size={20} />
             ) : (
-              <MdVisibility size={20} />
+              <EyeIcon size={20} />
             )}
           </button>
         </div>

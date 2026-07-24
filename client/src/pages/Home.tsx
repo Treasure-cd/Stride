@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MdAdd, MdClose, MdLink, MdEdit } from 'react-icons/md'
+import { PlusIcon, XIcon, LinkIcon, PencilSimpleIcon } from '../lib/icons'
 import {
   semesterApi,
   topicApi,
@@ -135,7 +135,7 @@ function NoteTile({ note, onDelete }: { note: Note; onDelete: () => void }) {
         aria-label="Delete note"
         className="absolute top-2 right-2 text-[#6b6580] hover:text-red-400 cursor-pointer"
       >
-        <MdClose size={14} />
+        <XIcon size={14} />
       </button>
       <p className="text-xs text-[#e5e5e5] line-clamp-5 mt-1 whitespace-pre-wrap">{note.content}</p>
     </div>
@@ -216,7 +216,7 @@ function HomePanel({
               onClick={() => setIsAddingNote(true)}
               className="flex items-center gap-1 text-sm text-[#6d28d9] hover:opacity-70 cursor-pointer"
             >
-              <MdAdd size={18} /> New note
+              <PlusIcon size={18} /> New note
             </button>
           )}
         </div>
@@ -279,7 +279,7 @@ function HomePanel({
               onClick={() => setIsAddingLink(true)}
               className="flex items-center gap-1 text-sm text-[#6d28d9] hover:opacity-70 cursor-pointer"
             >
-              <MdAdd size={16} /> Add link
+              <PlusIcon size={16} /> Add link
             </button>
           )}
         </div>
@@ -335,7 +335,7 @@ function HomePanel({
                   rel="noreferrer"
                   className="flex items-center gap-2 text-sm text-[#f5f5f5] hover:text-[#6d28d9] truncate"
                 >
-                  <MdLink size={16} className="text-[#b0b0b0] shrink-0" />
+                  <LinkIcon size={16} className="text-[#b0b0b0] shrink-0" />
                   <span className="truncate">{link.title}</span>
                 </a>
                 <button
@@ -344,7 +344,7 @@ function HomePanel({
                   aria-label="Delete link"
                   className="text-[#6b6580] hover:text-red-400 shrink-0 cursor-pointer"
                 >
-                  <MdClose size={14} />
+                  <XIcon size={14} />
                 </button>
               </div>
             ))
@@ -435,7 +435,7 @@ function CoursePanel({
               className="opacity-0 sm:group-hover:opacity-100 text-[#b0b0b0] hover:text-[#6d28d9] transition-opacity cursor-pointer"
               aria-label="Edit course"
             >
-              <MdEdit size={18} />
+              <PencilSimpleIcon size={18} />
             </button>
           </div>
             <p className="text-sm text-[#b0b0b0] mt-1 capitalize">
@@ -462,7 +462,7 @@ function CoursePanel({
         onClick={() => setIsAddingAssessment(true)}
         className="flex items-center gap-1 text-sm text-[#6d28d9] hover:opacity-70"
       >
-        <MdAdd size={16} /> Add assessment
+        <PlusIcon size={16} /> Add assessment
       </button>
     )}
   </div>
@@ -543,7 +543,7 @@ function CoursePanel({
                 rel="noreferrer"
                 className="flex items-center gap-2 text-sm text-[#f5f5f5] hover:text-[#6d28d9] truncate"
               >
-                <MdLink size={16} className="text-[#b0b0b0] shrink-0" />
+                <LinkIcon size={16} className="text-[#b0b0b0] shrink-0" />
                 <span className="truncate">{link.title}</span>
               </a>
             ))}
@@ -560,7 +560,7 @@ function CoursePanel({
               onClick={() => setIsAddingTopic(true)}
               className="flex items-center gap-1 text-sm text-[#6d28d9] hover:opacity-70"
             >
-              <MdAdd size={16} /> Create topic
+              <PlusIcon size={16} /> Create topic
             </button>
           )}
         </div>
@@ -638,7 +638,7 @@ function CoursePanel({
                     className="text-[#b0b0b0] hover:text-[#6d28d9] shrink-0"
                     aria-label="Open resource"
                   >
-                    <MdLink size={16} />
+                    <LinkIcon size={16} />
                   </a>
                 )}
                 <select
@@ -656,7 +656,7 @@ function CoursePanel({
                   aria-label="Delete topic"
                   className="text-[#6b6580] hover:text-red-400 shrink-0 cursor-pointer"
                 >
-                  <MdClose size={14} />
+                  <XIcon size={14} />
                 </button>
               </div>
             ))}
@@ -1021,7 +1021,7 @@ useEffect(() => {
             className="opacity-0 sm:group-hover:opacity-100 sm:opacity-0 text-[#b0b0b0] hover:text-[#6d28d9] transition-opacity cursor-pointer"
             aria-label="Edit semester"
           >
-            <MdEdit size={20} />
+            <PencilSimpleIcon size={20} />
           </button>
         </div>
 

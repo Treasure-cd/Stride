@@ -22,7 +22,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   useEffect(() => {
     const auth = getAuth()
-    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user)
@@ -33,7 +32,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       }
       setIsLoading(false)
     })
-
     return () => unsubscribe()
   }, [])
 
@@ -42,17 +40,18 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     window.scrollTo(0, 0)
   }
 
-const handleCompleted = () => {
-    setBarColor("#10b981") 
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
+  const handleCompleted = () => {
+      setBarColor("#10b981") 
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      timerRef.current = setTimeout(() => { 
+        navigate('/home')
+        if (onComplete) onComplete()
+      }, 1500);
     }
-    timerRef.current = setTimeout(() => { 
-      navigate('/home')
-      if (onComplete) onComplete()
-    }, 1500);
-  }
 
+    
   if (isLoading && currentStep === 1) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">

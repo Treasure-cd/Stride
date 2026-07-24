@@ -2,7 +2,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext';
-import { FiLogOut } from "react-icons/fi";
+import { SignOutIcon } from '../../lib/icons'
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ export default function Navbar() {
           className="p-2 rounded-md text-[#b0b0b0] hover:text-[#f5f5f5] hover:bg-[#3d3651]/30 transition-all cursor-pointer"
           aria-label="Log out"
         >
-         <FiLogOut size={22} strokeWidth={2} />
+         <SignOutIcon size={22} strokeWidth={2} />
         </button>
       </div>
     </nav>

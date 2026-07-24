@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MdAdd, MdClose } from 'react-icons/md'
+import { PlusIcon, XIcon } from '../../lib/icons'
 import { courseApi } from '../../lib/api'
 import type { Course, SemesterDoc, UpdateCoursePayload } from '../../lib/api'
 
@@ -181,7 +181,7 @@ function CourseEditModal({ course, userId, onClose, onSaved }: CourseEditModalPr
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-[#f5f5f5]">Edit course</h2>
           <button type="button" onClick={onClose} className="text-[#b0b0b0] hover:text-[#f5f5f5]" aria-label="Close">
-            <MdClose size={20} />
+            <XIcon size={20} />
           </button>
         </div>
 
@@ -290,7 +290,7 @@ function CourseEditModal({ course, userId, onClose, onSaved }: CourseEditModalPr
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-[#f5f5f5]">Assessments</p>
             <button type="button" onClick={addAssessment} className="flex items-center gap-1 text-xs text-[#6d28d9] hover:opacity-70">
-              <MdAdd size={16} /> Add assessment
+              <PlusIcon size={16} /> Add assessment
             </button>
           </div>
 
@@ -315,7 +315,7 @@ function CourseEditModal({ course, userId, onClose, onSaved }: CourseEditModalPr
                   />
                 </div>
                 <button type="button" onClick={() => removeAssessment(a.localId)} className="text-[#b0b0b0] hover:text-red-400 mt-1.5 shrink-0" aria-label="Remove assessment">
-                  <MdClose size={16} />
+                  <XIcon size={16} />
                 </button>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 items-center">
@@ -360,7 +360,7 @@ function CourseEditModal({ course, userId, onClose, onSaved }: CourseEditModalPr
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-[#f5f5f5]">Study links</p>
             <button type="button" onClick={addStudyLink} className="flex items-center gap-1 text-xs text-[#6d28d9] hover:opacity-70">
-              <MdAdd size={16} /> Add link
+              <PlusIcon size={16} /> Add link
             </button>
           </div>
 
@@ -385,7 +385,7 @@ function CourseEditModal({ course, userId, onClose, onSaved }: CourseEditModalPr
                 />
               </div>
               <button type="button" onClick={() => removeStudyLink(link.localId)} className="text-[#b0b0b0] hover:text-red-400 mt-1.5 shrink-0" aria-label="Remove study link">
-                <MdClose size={16} />
+                <XIcon size={16} />
               </button>
             </div>
           ))}

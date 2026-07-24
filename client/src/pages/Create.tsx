@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAuth } from 'firebase/auth'
-import { MdAdd, MdClose, MdDelete, MdExpandLess, MdExpandMore, MdLink, MdArrowBack } from 'react-icons/md'
+import { PlusIcon, XIcon, TrashIcon, CaretUpIcon, CaretDownIcon, LinkIcon, ArrowLeftIcon } from '../lib/icons'
 import { semesterApi } from '../lib/api'
 import { useParams } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
@@ -98,9 +98,9 @@ function CourseCard({
           </div>
         </div>
         {course.isExpanded ? (
-          <MdExpandLess size={22} className="text-[#b0b0b0] shrink-0" />
+          <CaretUpIcon size={22} className="text-[#b0b0b0] shrink-0" />
         ) : (
-          <MdExpandMore size={22} className="text-[#b0b0b0] shrink-0" />
+          <CaretDownIcon size={22} className="text-[#b0b0b0] shrink-0" />
         )}
       </button>
 
@@ -240,7 +240,7 @@ function CourseCard({
                 onClick={() => onAddAssessment(course.localId)}
                 className="flex items-center gap-1 text-xs text-[#6d28d9] hover:opacity-70"
               >
-                <MdAdd size={16} /> Add assessment
+                <PlusIcon size={16} /> Add assessment
               </button>
             </div>
 
@@ -272,7 +272,7 @@ function CourseCard({
                     className="text-[#b0b0b0] hover:text-red-400 mt-1.5 shrink-0"
                     aria-label="Remove assessment"
                   >
-                    <MdClose size={16} />
+                    <XIcon size={16} />
                   </button>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 items-center">
@@ -325,7 +325,7 @@ function CourseCard({
                 onClick={() => onAddStudyLink(course.localId)}
                 className="flex items-center gap-1 text-xs text-[#6d28d9] hover:opacity-70"
               >
-                <MdAdd size={16} /> Add link
+                <PlusIcon size={16} /> Add link
               </button>
             </div>
 
@@ -335,7 +335,7 @@ function CourseCard({
 
             {course.studyLinks.map((link) => (
               <div key={link.localId} className="flex items-start gap-2">
-                <MdLink size={18} className="text-[#b0b0b0] mt-2 shrink-0" />
+                <LinkIcon size={18} className="text-[#b0b0b0] mt-2 shrink-0" />
                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <input
                     type="text"
@@ -358,7 +358,7 @@ function CourseCard({
                   className="text-[#b0b0b0] hover:text-red-400 mt-1.5 shrink-0"
                   aria-label="Remove study link"
                 >
-                  <MdClose size={16} />
+                  <XIcon size={16} />
                 </button>
               </div>
             ))}
@@ -374,7 +374,7 @@ function CourseCard({
               onClick={() => onRemove(course.localId)}
               className="self-start flex items-center gap-1 text-xs text-red-400 hover:opacity-70 mt-1"
             >
-              <MdDelete size={16} /> Remove course
+              <TrashIcon size={16} /> Remove course
             </button>
           )}
         </div>
@@ -649,7 +649,7 @@ const Create = () => {
     })),
   })
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
 
@@ -692,7 +692,7 @@ const Create = () => {
         onClick={() => navigate(-1)}
         className="self-start flex items-center gap-1 text-sm hover:opacity-70 cursor-pointer mb-2"
         >
-        <MdArrowBack size={22} />
+        <ArrowLeftIcon size={22} />
         </button>
         <div className="text-center mb-2">
           <h1 className="text-3xl font-semibold text-[#f5f5f5] mb-3">
@@ -765,7 +765,7 @@ const Create = () => {
               disabled={isSaving}
               className="flex items-center gap-1 text-sm text-[#6d28d9] hover:opacity-70 disabled:opacity-40"
             >
-              <MdAdd size={18} /> Add course
+              <PlusIcon size={18} /> Add course
             </button>
           </div>
 
