@@ -10,7 +10,6 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      pendo.clearSession();
       await signOut(auth)
       navigate('/auth')
     } catch (err) {

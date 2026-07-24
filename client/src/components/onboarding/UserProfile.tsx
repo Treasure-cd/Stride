@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { getAuth } from 'firebase/auth';
-import { UNIVERSITIES } from "../../constants/universities";
+import { UNIVERSITIES } from '../../constants/universities.ts'
 
 interface UserProfile {
   setDisplayName: (name: string) => void;
@@ -89,10 +89,6 @@ if (!response.ok) {
 
     try {
       await createUser();
-      pendo.track("user_profile_created", {
-        institution: institution,
-        has_name: Boolean(name.trim())
-      })
       setDisplayName(name);
       localStorage.setItem("name", name)
       onNext();

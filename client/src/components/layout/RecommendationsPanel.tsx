@@ -1,5 +1,6 @@
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { recommendationsApi, RecommendationsResponse, RecommendationTask } from '../../lib/api'
+import { recommendationsApi } from '../../lib/api'
+import type { RecommendationsResponse, RecommendationTask } from '../../lib/api'
 import { useState, useEffect } from 'react'
 import { MdOutlineMenuBook, MdOutlineChecklist, MdOutlineBedtime, MdOutlineWarningAmber } from 'react-icons/md'
 import { useAuth } from '../../context/AuthContext'

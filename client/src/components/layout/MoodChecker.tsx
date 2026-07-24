@@ -1,4 +1,4 @@
-import { MoodState } from "../../lib/api";
+import type { MoodState } from "../../lib/api";
 
 const MOODS: { value: MoodState; emoji: string; label: string }[] = [
   { value: 'overwhelmed', emoji: '😫', label: 'Overwhelmed' },

@@ -3,41 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { getAuth } from 'firebase/auth'
 import { MdAdd, MdClose, MdDelete, MdExpandLess, MdExpandMore, MdLink, MdArrowBack } from 'react-icons/md'
 import { semesterApi } from '../lib/api'
-import type { CreateSemesterPayload } from '../lib/api'
-import { SemesterDoc } from '../lib/api'
 import { useParams } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-
-type Difficulty = 'low' | 'medium' | 'high'
-
-interface AssessmentFormState {
-  localId: string
-  title: string
-  dueDate: string
-  weight: string
-  scoreAchieved: string
-  isCompleted: boolean
-}
-
-interface StudyLinkFormState {
-  localId: string
-  title: string
-  url: string
-}
-
-interface CourseFormState {
-  localId: string
-  name: string
-  creditLoad: string
-  difficulty: Difficulty
-  themeColor: string
-  targetScore: string
-  continuousAssessment: string
-  exam: string
-  assessments: AssessmentFormState[]
-  studyLinks: StudyLinkFormState[]
-  isExpanded: boolean
-}
+import type { CreateSemesterPayload } from '../lib/api'
+import type { SemesterDoc } from '../lib/api'
+import type { AssessmentFormState, StudyLinkFormState, CourseFormState, Difficulty } from '../types/semester'
 
 let idCounter = 0
 const generateId = () => `id-${Date.now()}-${idCounter++}`
@@ -693,23 +663,8 @@ const Create = () => {
     try {
     if (isEditMode && semesterId) {
         await semesterApi.update(semesterId, buildPayload())
-        pendo.track("semester_updated", {
-          semester_id: semesterId,
-          course_count: courses.length,
-          total_assessment_count: courses.reduce((sum, c) => sum + c.assessments.length, 0),
-          total_study_link_count: courses.reduce((sum, c) => sum + c.studyLinks.length, 0)
-        })
     } else {
         await semesterApi.create(buildPayload())
-        pendo.track("semester_created", {
-          semester_title: title.trim(),
-          course_count: courses.length,
-          total_assessment_count: courses.reduce((sum, c) => sum + c.assessments.length, 0),
-          total_study_link_count: courses.reduce((sum, c) => sum + c.studyLinks.length, 0),
-          semester_duration_days: Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)),
-          start_date: startDate,
-          end_date: endDate
-        })
     }
     navigate('/home')
     } catch (err: any) {

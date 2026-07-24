@@ -162,17 +162,6 @@ function CourseEditModal({ course, userId, onClose, onSaved }: CourseEditModalPr
 
     try {
       const updatedSemester = await courseApi.update(userId, course._id, payload)
-      pendo.track("course_updated", {
-        course_id: course._id,
-        course_name: name.trim(),
-        difficulty: difficulty,
-        credit_load: Number(creditLoad),
-        target_score: Number(targetScore),
-        assessment_count: assessments.length,
-        study_link_count: studyLinks.length,
-        ca_percentage: Number(continuousAssessment),
-        exam_percentage: Number(exam)
-      })
       onSaved(updatedSemester)
       onClose()
     } catch (err: any) {

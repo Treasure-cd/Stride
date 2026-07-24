@@ -55,9 +55,6 @@ Stride helps students:
 - MongoDB / Mongoose
 - Firebase Admin
 
-### Analytics / product insight
-- Pendo / Novus AI integration for product analytics and user behaviour tracking
-
 ## Project structure
 
 - client/ – React frontend

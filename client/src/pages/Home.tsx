@@ -17,31 +17,16 @@ import type {
   Note,
   GeneralStudyLink,
   MoodState,
-  PreferencesDoc
 } from '../lib/api'
+import { celebrate } from '../lib/celebrate'
 import { useAuth } from '../context/AuthContext';
 import CourseEditModal from '../components/layout/CourseEditModal'
 import Navbar from '../components/layout/Navbar'
 import MoodChecker from '../components/layout/MoodChecker'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { RecommendationsSection } from '../components/layout/RecommendationsPanel'
-import { celebrate } from '../lib/celebrate'
-
-const Spinner = ({ size = 20 }: { size?: number }) => (
-  <svg className="animate-spin text-[#6d28d9]" style={{ height: size, width: size }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-  </svg>
-)
-
-const formatDate = (value: string) =>
-  new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-
-const formatShortDate = (value: Date) =>
-  value.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-
-const formatTime = (value: Date) =>
-  value.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+import Spinner from '../components/ui/Spinner'
+import { formatDate, formatShortDate, formatTime } from '../utils/formatDateTime'
 
 function MetaCard({ label, value, rotate }: { label: string; value: string; rotate: string }) {
   return (
@@ -754,9 +739,6 @@ useEffect(() => {
 const handleLogMood = async (mood: MoodState) => {
   try {
     await moodApi.logMood({ mood })
-    pendo.track("mood_logged", {
-      mood_state: mood
-    })
     setTodayMood(mood)
   } catch (err) {
     console.error('Could not save mood:', err)
@@ -855,11 +837,6 @@ useEffect(() => {
         content: newNoteContent.trim(),
         color: newNoteColor,
       })
-      pendo.track("note_created", {
-        semester_id: semester._id,
-        note_color: newNoteColor,
-        content_length: newNoteContent.trim().length
-      })
       setNotes((prev) => [note, ...prev])
       setNewNoteContent('')
       setIsAddingNote(false)
@@ -873,9 +850,6 @@ useEffect(() => {
   const handleDeleteNote = async (id: string) => {
     try {
       await noteApi.remove(id)
-      pendo.track("note_deleted", {
-        note_id: id
-      })
       setNotes((prev) => prev.filter((note) => note._id !== id))
     } catch (err) {
       console.error('Failed to delete note:', err)
@@ -893,11 +867,6 @@ useEffect(() => {
       })
       let linkDomain = "unknown"
       try { linkDomain = new URL(newLinkUrl.trim()).hostname } catch { /* ignore */ }
-      pendo.track("study_link_added", {
-        semester_id: semester._id,
-        link_title: newLinkTitle.trim(),
-        link_url_domain: linkDomain
-      })
       setLinks((prev) => [link, ...prev])
       setNewLinkTitle('')
       setNewLinkUrl('')
@@ -912,9 +881,6 @@ useEffect(() => {
   const handleDeleteLink = async (id: string) => {
     try {
       await generalStudyLinkApi.remove(id)
-      pendo.track("study_link_deleted", {
-        link_id: id
-      })
       setLinks((prev) => prev.filter((link) => link._id !== id))
     } catch (err) {
       console.error('Failed to delete link:', err)
@@ -931,12 +897,6 @@ useEffect(() => {
         title: newTopicTitle.trim(),
         status: newTopicStatus,
         resourceLink: newTopicResource.trim() || undefined,
-      })
-      pendo.track("topic_created", {
-        course_id: selectedCourseId,
-        semester_id: semester._id,
-        topic_status: newTopicStatus,
-        has_resource_link: Boolean(newTopicResource.trim())
       })
       setTopicsByCourse((prev) => ({
         ...prev,
@@ -958,11 +918,6 @@ useEffect(() => {
     try {
       const updated = await topicApi.update(topic._id, { isCompleted: !topic.isCompleted })
       if (!topic.isCompleted) {
-        pendo.track("topic_completed", {
-          course_id: selectedCourseId,
-          topic_id: topic._id,
-          topic_title: topic.title
-        })
       }
       setTopicsByCourse((prev) => ({
         ...prev,
@@ -978,12 +933,6 @@ useEffect(() => {
     if (!selectedCourseId) return
     try {
       const updated = await topicApi.update(topic._id, { status })
-      pendo.track("topic_status_changed", {
-        course_id: selectedCourseId,
-        topic_id: topic._id,
-        old_status: topic.status,
-        new_status: status
-      })
       setTopicsByCourse((prev) => ({
         ...prev,
         [selectedCourseId]: prev[selectedCourseId].map((t) => (t._id === topic._id ? updated : t)),
@@ -1018,10 +967,6 @@ useEffect(() => {
     if (!selectedCourseId) return
     try {
       await topicApi.remove(topicId)
-      pendo.track("topic_deleted", {
-        course_id: selectedCourseId,
-        topic_id: topicId
-      })
       setTopicsByCourse((prev) => ({
         ...prev,
         [selectedCourseId]: prev[selectedCourseId].filter((t) => t._id !== topicId),

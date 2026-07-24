@@ -1,4 +1,4 @@
-export const UNIVERSITIES = [
+export const UNIVERSITIES: string[] = [
   "Federal University of Technology, Minna",
   "Federal University of Technology, Akure",
   "Federal University of Technology, Owerri (FUTO)",

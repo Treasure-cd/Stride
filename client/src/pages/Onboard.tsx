@@ -16,18 +16,13 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const [error, setError] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState('')
   const [barColor, setBarColor] = useState("#6d28d9")
-
   const timerRef = useRef<NodeJS.Timeout | null>(null)
-
-  
-
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const navigate = useNavigate();
 
   useEffect(() => {
     const auth = getAuth()
     
-    // Subscribe to auth state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setCurrentUser(user)
@@ -49,9 +44,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
 const handleCompleted = () => {
     setBarColor("#10b981") 
-    pendo.track("onboarding_completed", {
-      step_count: 2
-    })
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
