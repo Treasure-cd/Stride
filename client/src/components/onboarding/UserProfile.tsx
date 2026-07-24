@@ -16,7 +16,7 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_PROD_URL
+  const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL
 
   const filteredUniversities = UNIVERSITIES.filter((uni) =>
     uni.toLowerCase().includes(institution.toLowerCase())
