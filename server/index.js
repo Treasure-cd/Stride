@@ -43,6 +43,6 @@ app.use('/api/courses', courseRouter)
 app.use('/api/assessments', assessmentRouter)
 app.use('/api/recommendations', recommendationRouter)
 
-connectDB().then(() => {
-  app.listen(PORT, () => console.log('Server running'));
+connectDB().finally(() => {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
