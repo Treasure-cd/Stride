@@ -11,6 +11,7 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   displayName: string;
+  setDisplayName: (name: string) => void;
   preferences: PreferencesDoc | null
 };
 
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   displayName: "",
+  setDisplayName: () => {},
   preferences: null
 })
 
@@ -65,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, loading, displayName, preferences }}>
+    <AuthContext.Provider value={{ user, loading, displayName, setDisplayName, preferences }}>
       {children}
     </AuthContext.Provider>
   )

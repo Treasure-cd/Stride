@@ -81,15 +81,14 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       <div className="w-full max-w-2xl animate-fadeIn">
         {/* Progress indicator */}
         <div className="mb-8">
-             <div className='h-4' id='pattern-div' />
-          <div className="w-full h-1 bg-[#3d3651] rounded-sm overflow-hidden mb-4">
-           
+          <div className='h-4' id='pattern-div' />
+          <div className="w-full h-1 bg-input-border rounded-sm overflow-hidden mb-4">
             <div
               className="h-full transition-all duration-500 ease-out"
               style={{ width: `${(currentStep / 2) * 100}%`, backgroundColor: barColor }}
             />
           </div>
-          <p className="text-xs text-[#b0b0b0] text-center">Step {currentStep} of 2</p>
+          <p className="text-xs text-text text-center">Step {currentStep} of 2</p>
         </div>
 
         {/* Error message */}

@@ -1,4 +1,4 @@
-import type { MoodState } from "../../lib/api";
+import type { MoodState } from "../../lib/api"
 
 const MOODS: { value: MoodState; emoji: string; label: string }[] = [
   { value: 'overwhelmed', emoji: '😫', label: 'Overwhelmed' },
@@ -18,26 +18,38 @@ export default function MoodChecker({
   if (moodLoading) return null
 
   if (todayMood) {
-    const logged = MOODS.find((m) => m.value === todayMood)!
+    const logged = MOODS.find((m) => m.value === todayMood)
     return (
-      <div className="flex items-center gap-2 text-sm text-bold text-[#b0b0b0]">
+      <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-(--bg-elevated) border border-(--border-subtle) text-sm">
+        <span className="text-lg">{logged?.emoji}</span>
+        <span className="text-(--text) text-xs">
+          Feeling <strong className="text-(--text-h) font-medium lowercase">{logged?.label}</strong> today
+        </span>
       </div>
     )
   }
 
   return (
-    <div className="rounded-lg border border-[#3d3651] p-5 flex flex-col gap-3">
-      <p className="text-sm font-medium text-[#f5f5f5]">How are you feeling right now?</p>
-      <div className="flex gap-3">
+    <div className="p-5 rounded-xl bg-(--bg-elevated) border border-(--border-subtle) flex flex-col gap-3.5">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold text-(--text-h)">How are you feeling right now?</p>
+        <span className="text-[11px] text-(--text) opacity-50">Daily check-in</span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
         {MOODS.map((mood) => (
           <button
             key={mood.value}
             type="button"
             onClick={() => onLogMood(mood.value)}
-            className="flex-1 flex flex-col cursor-pointer items-center gap-1.5 rounded-lg border border-[#3d3651] py-3 text-[#b0b0b0] hover:border-[#6d28d9] hover:text-[#f5f5f5] transition-colors"
+            className="flex flex-col items-center justify-center gap-1.5 rounded-lg bg-(--bg) border border-(--input-border) py-3 px-2 text-(--text) hover:border-(--accent) hover:text-(--text-h) hover:bg-(--accent-bg) transition-all cursor-pointer group"
           >
-            <span className="text-2xl">{mood.emoji}</span>
-            <span className="text-xs">{mood.label}</span>
+            <span className="text-2xl transition-transform duration-200 group-hover:scale-110">
+              {mood.emoji}
+            </span>
+            <span className="text-xs font-medium opacity-80 group-hover:opacity-100">
+              {mood.label}
+            </span>
           </button>
         ))}
       </div>

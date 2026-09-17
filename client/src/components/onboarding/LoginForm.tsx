@@ -1,24 +1,27 @@
 import { useState } from 'react'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  getAuth,
+} from 'firebase/auth'
 import { auth } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
-import google from '../../assets/google.png';
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { signInWithPopup } from "firebase/auth";
-import { userApi } from '../../lib/api';
+import google from '../../assets/google.png'
+import { FormInput } from '../ui/FormInput'
+import { FormButton } from '../ui/FormButton'
 
 const LoginForm = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false)
 
-  const navigate = useNavigate();
-  const user = userApi.get;
+  const navigate = useNavigate()
+
+  const isFormValid = email.trim() !== '' && password !== ''
   
-
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
@@ -53,67 +56,61 @@ async function handleGoogleAuth() {
   }
 }
 
-  return (
+return (
     <>
-    <h1 className="text-2xl font-semibold mb-4 text-center">Sign in to Stride</h1>
-       <div className="w-full max-w-md mx-auto p-4 sm:p-8 rounded-lg border-0 lg:border lg:border-purple-400">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-semibold mb-1" htmlFor="login-email">
-            Email
-          </label>
-          <input
+      <h1 className="text-2xl font-semibold mb-4 text-center">Sign in to Stride</h1>
+      <div className="w-full max-w-md mx-auto p-4 sm:p-8 rounded-lg border border-(--border-subtle) bg-(--bg-elevated)">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <FormInput
             id="login-email"
             type="email"
+            label="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-md border px-3 py-2 focus:border-purple-500 outline-none"
             placeholder="Your email"
             required
           />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold mb-1" htmlFor="login-password">
-            Password
-          </label>
-          <input
+          <FormInput
             id="login-password"
             type="password"
+            label="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded-md border px-3 py-2 focus:border-purple-500 outline-none"
             placeholder="Your password"
             required
           />
-        </div>
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        <button
+          
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          
+        <FormButton
           type="submit"
-          className="w-full rounded-md bg-purple-600 text-white py-2 font-semibold disabled:opacity-50 hover:opacity-50"
-          disabled={loading}
+          loading={loading}
+          loadingText="Signing in…"
+          disabled={!isFormValid}
         >
-          {loading ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
-            <div className="relative flex-row gap-1 my-6">
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-card font-bold text-foreground/50">Or</span>
-              </div>
-            </div>
-      <div className="mt-4">
-        <button
-          type="button"
-          className="w-full rounded-md border bg-white text-black py-2 font-semibold hover:bg-transparent hover:text-[#E0E0E0] flex items-center justify-center gap-2 disabled:opacity-50"
-          onClick={handleGoogleAuth}
-          disabled={googleLoading}
-        >
-          <img src={google} alt="Google logo" className="w-5 h-5" />
-          Sign in with Google
-        </button>
-      </div>
-    </div>
-    </>
+          Sign in
+        </FormButton>
+        </form>
 
+        <div className="relative flex-row gap-1 my-6">
+          <div className="relative flex justify-center text-xs">
+            <span className="px-2 bg-(--bg-elevated) font-bold text-(--text) opacity-50">Or</span>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <FormButton 
+            type="button" 
+            variant="outline" 
+            onClick={handleGoogleAuth} 
+            disabled={googleLoading}
+          >
+            <img src={google} alt="Google logo" className="w-5 h-5" />
+            {googleLoading ? 'Connecting...' : 'Sign in with Google'}
+          </FormButton>
+        </div>
+      </div>
+    </>
   )
 }
 

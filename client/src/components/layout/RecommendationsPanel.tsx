@@ -56,6 +56,14 @@ const MOOD_DOT: Record<string, string> = {
   overwhelmed: 'bg-[#f87171]',
 }
 
+const CACHE_TTL_MS = 5 * 60 * 1000
+
+let recommendationsCache: { uid: string; data: RecommendationsResponse; timestamp: number } | null = null
+
+export function invalidateRecommendationsCache() {
+  recommendationsCache = null
+}
+
 function TaskCard({ task }: { task: RecommendationTask }) {
   const config = TASK_CONFIG[task.type]
 
@@ -111,9 +119,19 @@ export function RecommendationsSection() {
     const auth = getAuth()
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) return
+
+      if (recommendationsCache && recommendationsCache.uid === user.uid && Date.now() - recommendationsCache.timestamp < CACHE_TTL_MS) {
+        setData(recommendationsCache.data)
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       recommendationsApi.get()
-        .then(setData)
+        .then((res) => {
+          recommendationsCache = { uid: user.uid, data: res, timestamp: Date.now() }
+          setData(res)
+        })
         .catch(() => setError(true))
         .finally(() => setLoading(false))
     })
@@ -121,7 +139,7 @@ export function RecommendationsSection() {
   }, [])
 
   if (loading) return <p className="text-xs text-[#6b6580]">Building your plan…</p>
-  if (error || !data) return null
+  if (error || !data || data.tasks.length === 0) return null
 
   const prioritizeAssessments = preferences?.disabilities?.some((d) =>
     ASSESSMENT_PRIORITY_DISABILITIES.includes(d)

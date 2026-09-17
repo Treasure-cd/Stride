@@ -12,13 +12,13 @@ const Auth = () => {
         className="relative w-full h-20 lg:h-auto lg:w-1/2 overflow-hidden flex items-center justify-center"
       />
 
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 sm:px-16 lg:px-24 py-12 lg:py-0">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 sm:px-16 lg:px-24 py-12 lg:py-0 ">
         {isLogin ? <LoginForm /> : <SignupForm />}
         <div className="mt-4 text-center">
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-purple-500 hover:opacity-50 cursor-pointer"
+            className="text-sm font-semibold text-(--accent) transition-opacity duration-200 ease-in-out hover:opacity-50 cursor-pointer"
           >
             {isLogin ? 'Need an account? Sign up' : 'Already have an account? Log in'}
           </button>
