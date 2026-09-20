@@ -295,14 +295,16 @@ const Create = () => {
   return (
     <div className="min-h-screen py-12 px-6 sm:px-10 bg-(--bg) text-(--text)">
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto flex flex-col gap-8">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="self-start flex items-center gap-1 text-sm text-(--text) hover:text-(--text-h) transition-opacity hover:opacity-75 cursor-pointer mb-2"
-        >
-          <ArrowLeftIcon size={20} />
-          <span>Back</span>
-        </button>
+        <div className="flex w-full justify-start">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center justify-center rounded-xl border border-(--border-subtle) bg-(--bg-elevated) p-2.5 text-(--text) transition-all hover:opacity-100 hover:bg-(--bg)/60 hover:text-(--text-h) cursor-pointer"
+            aria-label="Go back home"
+          >
+            <ArrowLeftIcon size={18} />
+          </button>
+        </div>
 
         <div className="text-center mb-2">
           <h1 className="text-3xl font-semibold text-(--text-h) mb-3">

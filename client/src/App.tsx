@@ -1,30 +1,35 @@
 import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import OnboardingFlow from './pages/Onboard'
 
+import OnboardingFlow from './pages/Onboard'
+import Settings from './pages/Settings'
 import Home from './pages/Home'
 import Auth from './pages/Auth'
 import AuthCheck from './pages/AuthCheck'
 import Create from './pages/Create'
+import Profile from './pages/Profile'
 
-export default function App() {
-
-  const { preferences } = useAuth();
+function AccessibilitySync() {
+  const { preferences } = useAuth()
 
   useEffect(() => {
-  const isDyslexic = preferences?.disabilities.includes('dyslexia');
-  
-  if (isDyslexic) {
-    document.documentElement.setAttribute('data-accessibility', 'dyslexic');
-  } else {
-    document.documentElement.removeAttribute('data-accessibility');
-  }
-}, [preferences]);
+    if (!preferences?.displaySettings) return
+    const { fontFamily, textSize, letterSpacing, theme } = preferences.displaySettings
 
+    document.documentElement.dataset.font = fontFamily
+    document.documentElement.dataset.textSize = textSize
+    document.documentElement.dataset.letterSpacing = letterSpacing
+    document.documentElement.dataset.background = theme
+  }, [preferences?.displaySettings])
+
+  return null
+}
+
+function AppRoutes() {
   return (
     <>
-    <AuthProvider>
+      <AccessibilitySync />
       <Routes>
         <Route path="/" element={<AuthCheck />} />
         <Route path="/auth" element={<Auth />} />
@@ -32,8 +37,17 @@ export default function App() {
         <Route path="/create" element={<Create />} />
         <Route path="/onboarding" element={<OnboardingFlow />} />
         <Route path="/edit/:semesterId" element={<Create />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/settings' element={<Settings />} />
       </Routes>
-    </AuthProvider>
     </>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   )
 }

@@ -13,5 +13,9 @@ export {
     CaretDownIcon,
     LinkIcon,
     ArrowLeftIcon,
-    PencilSimpleIcon
+    PencilSimpleIcon,
+    GearIcon,
+    UserIcon,
+    CameraIcon,
+    CheckIcon
 } from "@phosphor-icons/react";

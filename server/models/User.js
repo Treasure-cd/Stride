@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   profile: {
     name: { type: String },
-    institution: { type: String }
+    institution: { type: String },
+    avatarUrl: { type: String, default: null },
   }
 });
 

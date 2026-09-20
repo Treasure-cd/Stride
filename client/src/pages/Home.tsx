@@ -32,29 +32,37 @@ import HomePanel from '../components/home/HomePanel'
 import { invalidateRecommendationsCache } from '../components/layout/RecommendationsPanel'
 import CoursePanel from '../components/home/CoursePanel'
 
+// Cache variables, they're here to survive react state
+let cachedSemester: SemesterDoc | null = null;
+let hasLoadedSemester = false;
+let cachedNotes: Note[] | null = null;
+let cachedLinks: GeneralStudyLink[] | null = null;
+let cachedTopics: Record<string, Topic[]> = {};
+
 const Home = () => {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
 
-  const [semester, setSemester] = useState<SemesterDoc | null>(null)
-  const [loadingSemester, setLoadingSemester] = useState(true)
+  // Initialize state with cached data if it exists
+  const [semester, setSemester] = useState<SemesterDoc | null>(cachedSemester)
+  const [loadingSemester, setLoadingSemester] = useState(!hasLoadedSemester)
   const [semesterError, setSemesterError] = useState<string | null>(null)
 
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null)
   const [editingCourse, setEditingCourse] = useState<Course | null>(null)
 
-  const [topicsByCourse, setTopicsByCourse] = useState<Record<string, Topic[]>>({})
+  const [topicsByCourse, setTopicsByCourse] = useState<Record<string, Topic[]>>(cachedTopics)
   const [topicsLoading, setTopicsLoading] = useState(false)
 
-  const [notes, setNotes] = useState<Note[]>([])
-  const [notesLoading, setNotesLoading] = useState(true)
+  const [notes, setNotes] = useState<Note[]>(cachedNotes || [])
+  const [notesLoading, setNotesLoading] = useState(!cachedNotes)
   const [isAddingNote, setIsAddingNote] = useState(false)
   const [newNoteContent, setNewNoteContent] = useState('')
   const [newNoteColor, setNewNoteColor] = useState('#6d28d9')
   const [savingNote, setSavingNote] = useState(false)
 
-  const [links, setLinks] = useState<GeneralStudyLink[]>([])
-  const [linksLoading, setLinksLoading] = useState(true)
+  const [links, setLinks] = useState<GeneralStudyLink[]>(cachedLinks || [])
+  const [linksLoading, setLinksLoading] = useState(!cachedLinks)
   const [isAddingLink, setIsAddingLink] = useState(false)
   const [newLinkTitle, setNewLinkTitle] = useState('')
   const [newLinkUrl, setNewLinkUrl] = useState('')
@@ -76,6 +84,12 @@ const Home = () => {
   const [savingAssessment, setSavingAssessment] = useState(false)
 
   const [now, setNow] = useState(new Date())
+
+  // Helper to update both state and cache simultaneously
+  const updateSemesterState = (newSemester: SemesterDoc | null) => {
+    cachedSemester = newSemester
+    setSemester(newSemester)
+  }
 
   useEffect(() => {
     const auth = getAuth()
@@ -103,19 +117,29 @@ const Home = () => {
       return
     }
     const loadSemester = async () => {
-      setLoadingSemester(true)
+      // Only show full loading screen if we don't have a cached version
+      if (!hasLoadedSemester) {
+        setLoadingSemester(true)
+      }
       setSemesterError(null)
       try {
         const semesters = await semesterApi.getAll()
         if (semesters.length === 0) {
+          hasLoadedSemester = true
+          updateSemesterState(null)
           return
         }
         const today = new Date()
         const active = semesters.find((s) => new Date(s.startDate) <= today && today <= new Date(s.endDate))
-        setSemester(active || semesters[0])
+        const current = active || semesters[0]
+        
+        hasLoadedSemester = true
+        updateSemesterState(current)
       } catch (err: any) {
         console.error('Failed to load semester:', err)
-        setSemesterError(err.message || 'Could not load your semester.')
+        if (!cachedSemester) {
+          setSemesterError(err.message || 'Could not load your semester.')
+        }
       } finally {
         setLoadingSemester(false)
       }
@@ -126,29 +150,42 @@ const Home = () => {
   useEffect(() => {
     if (!semester) return
 
-    setNotesLoading(true)
-    setLinksLoading(true)
+    // Only show loading if we don't have cached data yet
+    if (!cachedNotes) setNotesLoading(true)
+    if (!cachedLinks) setLinksLoading(true)
 
+    // Fetch silently in the background
     noteApi
       .getBySemester(semester._id)
-      .then((notesData) => setNotes(notesData))
+      .then((notesData) => {
+        cachedNotes = notesData
+        setNotes(notesData)
+      })
       .catch((err) => console.error('Failed to load notes:', err))
       .finally(() => setNotesLoading(false))
 
     generalStudyLinkApi
       .getBySemester(semester._id)
-      .then((linksData) => setLinks(linksData))
+      .then((linksData) => {
+        cachedLinks = linksData
+        setLinks(linksData)
+      })
       .catch((err) => console.error('Failed to load links:', err))
       .finally(() => setLinksLoading(false))
   }, [semester])
 
   useEffect(() => {
-    if (!selectedCourseId || topicsByCourse[selectedCourseId]) return
+    if (!selectedCourseId) return
+    
+    // We already have it, don't show loading (but still fetch updates in background)
+    if (!cachedTopics[selectedCourseId]) {
+      setTopicsLoading(true)
+    }
 
     const loadTopics = async () => {
-      setTopicsLoading(true)
       try {
         const data = await topicApi.getByCourse(selectedCourseId)
+        cachedTopics[selectedCourseId] = data
         setTopicsByCourse((prev) => ({ ...prev, [selectedCourseId]: data }))
       } catch (err) {
         console.error('Failed to load topics:', err)
@@ -157,7 +194,7 @@ const Home = () => {
       }
     }
     loadTopics()
-  }, [selectedCourseId, topicsByCourse])
+  }, [selectedCourseId])
 
   const handleLogMood = async (mood: MoodState) => {
     try {
@@ -184,7 +221,9 @@ const Home = () => {
         content: newNoteContent.trim(),
         color: newNoteColor,
       })
-      setNotes((prev) => [note, ...prev])
+      const updatedNotes = [note, ...notes]
+      cachedNotes = updatedNotes
+      setNotes(updatedNotes)
       setNewNoteContent('')
       setIsAddingNote(false)
     } catch (err) {
@@ -197,7 +236,9 @@ const Home = () => {
   const handleDeleteNote = async (id: string) => {
     try {
       await noteApi.remove(id)
-      setNotes((prev) => prev.filter((note) => note._id !== id))
+      const updatedNotes = notes.filter((note) => note._id !== id)
+      cachedNotes = updatedNotes
+      setNotes(updatedNotes)
     } catch (err) {
       console.error('Failed to delete note:', err)
     }
@@ -212,7 +253,9 @@ const Home = () => {
         title: newLinkTitle.trim(),
         url: newLinkUrl.trim(),
       })
-      setLinks((prev) => [link, ...prev])
+      const updatedLinks = [link, ...links]
+      cachedLinks = updatedLinks
+      setLinks(updatedLinks)
       setNewLinkTitle('')
       setNewLinkUrl('')
       setIsAddingLink(false)
@@ -226,7 +269,9 @@ const Home = () => {
   const handleDeleteLink = async (id: string) => {
     try {
       await generalStudyLinkApi.remove(id)
-      setLinks((prev) => prev.filter((link) => link._id !== id))
+      const updatedLinks = links.filter((link) => link._id !== id)
+      cachedLinks = updatedLinks
+      setLinks(updatedLinks)
     } catch (err) {
       console.error('Failed to delete link:', err)
     }
@@ -243,9 +288,14 @@ const Home = () => {
         status: newTopicStatus,
         resourceLink: newTopicResource.trim() || undefined,
       })
+      
+      const currentTopics = topicsByCourse[selectedCourseId] || []
+      const newTopics = [...currentTopics, topic]
+      
+      cachedTopics[selectedCourseId] = newTopics
       setTopicsByCourse((prev) => ({
         ...prev,
-        [selectedCourseId]: [...(prev[selectedCourseId] || []), topic],
+        [selectedCourseId]: newTopics,
       }))
       setNewTopicTitle('')
       setNewTopicResource('')
@@ -262,9 +312,13 @@ const Home = () => {
     if (!selectedCourseId) return
     try {
       const updated = await topicApi.update(topic._id, { isCompleted: !topic.isCompleted })
+      
+      const newTopics = topicsByCourse[selectedCourseId].map((t) => (t._id === topic._id ? updated : t))
+      cachedTopics[selectedCourseId] = newTopics
+      
       setTopicsByCourse((prev) => ({
         ...prev,
-        [selectedCourseId]: prev[selectedCourseId].map((t) => (t._id === topic._id ? updated : t)),
+        [selectedCourseId]: newTopics,
       }))
       if (updated.isCompleted) celebrate()
     } catch (err) {
@@ -276,9 +330,13 @@ const Home = () => {
     if (!selectedCourseId) return
     try {
       const updated = await topicApi.update(topic._id, { status })
+      
+      const newTopics = topicsByCourse[selectedCourseId].map((t) => (t._id === topic._id ? updated : t))
+      cachedTopics[selectedCourseId] = newTopics
+      
       setTopicsByCourse((prev) => ({
         ...prev,
-        [selectedCourseId]: prev[selectedCourseId].map((t) => (t._id === topic._id ? updated : t)),
+        [selectedCourseId]: newTopics,
       }))
     } catch (err) {
       console.error('Failed to update topic status:', err)
@@ -289,9 +347,13 @@ const Home = () => {
     if (!selectedCourseId) return
     try {
       await topicApi.remove(topicId)
+      
+      const newTopics = topicsByCourse[selectedCourseId].filter((t) => t._id !== topicId)
+      cachedTopics[selectedCourseId] = newTopics
+      
       setTopicsByCourse((prev) => ({
         ...prev,
-        [selectedCourseId]: prev[selectedCourseId].filter((t) => t._id !== topicId),
+        [selectedCourseId]: newTopics,
       }))
     } catch (err) {
       console.error('Failed to delete topic:', err)
@@ -307,7 +369,7 @@ const Home = () => {
         dueDate: newAssessmentDueDate,
         weight: Number(newAssessmentWeight),
       })
-      setSemester(updatedSemester)
+      updateSemesterState(updatedSemester) // Saves to cache too
       setNewAssessmentTitle('')
       setNewAssessmentDueDate('')
       setNewAssessmentWeight('')
@@ -358,8 +420,6 @@ if (!semester) {
       <Navbar />
       <div className="min-h-[calc(100vh-73px)] flex items-center justify-center px-6">
         <div className="max-w-md w-full text-center border border-[#3d3651]/60 bg-[#171717] rounded-2xl p-8 sm:p-10 flex flex-col items-center shadow-xl">
-          {/* Accent icon container */}
-  
           <h2 className="text-2xl font-bold text-[#f5f5f5] mb-2">
             No active semester
           </h2>
@@ -493,7 +553,7 @@ if (!semester) {
                 course={editingCourse}
                 userId={user?.uid}
                 onClose={() => setEditingCourse(null)}
-                onSaved={(updatedSemester) => setSemester(updatedSemester)}
+                onSaved={updateSemesterState}
               />
             )}
           </div>

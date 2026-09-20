@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { PlusIcon, LinkIcon, XIcon } from '../../lib/icons'
 import type { Note, GeneralStudyLink, MoodState } from '../../lib/api'
 import MoodChecker from '../layout/MoodChecker'
@@ -59,6 +60,9 @@ export default function HomePanel({
   moodLoading,
   onLogMood,
 }: HomePanelProps) {
+
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null)
+
   return (
     <div className="flex flex-col gap-8">
       <RecommendationsSection />
@@ -88,7 +92,7 @@ export default function HomePanel({
           borderColor: `color-mix(in srgb, ${newNoteColor} 35%, var(--border-subtle))`,
         }}
       >
-        <textarea
+      <textarea
           value={newNoteContent}
           onChange={(event) => setNewNoteContent(event.target.value)}
           placeholder="Jot something down…"
@@ -132,11 +136,16 @@ export default function HomePanel({
       <p className="text-xs text-(--text) opacity-50 col-span-full py-2">Loading notes…</p>
     ) : notes.length === 0 && !isAddingNote ? (
       <p className="text-sm text-(--text) opacity-50 col-span-full py-4 text-center">
-        Nothing here yet — jot down a quick note.
+        Nothing here yet, so go on, jot down a quick note.
       </p>
     ) : (
       notes.map((note) => (
-        <NoteTile key={note._id} note={note} onDelete={() => onDeleteNote(note._id)} />
+        <NoteTile 
+          key={note._id} 
+          note={note} 
+          onDelete={() => onDeleteNote(note._id)} 
+          onClick={() => setSelectedNote(note)} // Added this line
+        />
       ))
     )}
   </div>
@@ -224,10 +233,41 @@ export default function HomePanel({
       ))
     )}
   </div>
-</div>
-
-      {todayMood && (
+  </div>
+    {todayMood && (
         <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} />
+      )}
+      {selectedNote && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 sm:p-6 backdrop-blur-sm"
+          onClick={() => setSelectedNote(null)}
+        >
+          <div 
+            className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl bg-(--bg-elevated) border shadow-2xl p-6 sm:p-10 flex flex-col gap-4"
+            style={{ borderColor: `color-mix(in srgb, ${selectedNote.color} 30%, var(--border-subtle))` }}
+            onClick={(e) => e.stopPropagation()} // Prevents clicking inside the modal from closing it
+          >
+            {/* Modal Accent Stripe */}
+            <div className="absolute top-0 left-0 right-0 h-2" style={{ backgroundColor: selectedNote.color }} />
+            
+            <button
+              type="button"
+              onClick={() => setSelectedNote(null)}
+              className="absolute top-5 right-5 p-2 rounded-xl text-(--text) opacity-60 hover:opacity-100 hover:bg-(--bg) transition-all cursor-pointer"
+            >
+              <XIcon size={24} />
+            </button>
+
+            <h3 className="text-sm font-bold uppercase tracking-widest opacity-60 mt-2" style={{ color: selectedNote.color }}>
+              Note
+            </h3>
+            
+            {/* Very large, highly legible text for neurodivergent reading comfort */}
+            <p className="text-lg sm:text-xl md:text-2xl text-(--text-h) whitespace-pre-wrap leading-relaxed mt-2">
+              {selectedNote.content}
+            </p>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -5,6 +5,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL;
 export interface UserProfile {
   name: string
   institution: string
+  avatarUrl: string;
 }
 
 export interface UserDoc {
@@ -175,15 +176,56 @@ export interface MoodTrackerDoc {
   updatedAt?: string
 }
 
+export type DisabilityProfile =
+  | 'Focus & Attention'
+  | 'Reading & Writing'
+  | 'Energy & Pacing'
+  | 'Anxiety & Overwhelm'
+  | 'Standard Track'
+
+export interface LearningContext {
+  focusIssues: boolean
+  startingTasksIsHard: boolean
+  losesTrackMidTask: boolean
+  misjudgesTime: boolean
+  switchingTasksIsHard: boolean
+  readingIsSlowOrDraining: boolean
+  strugglesWithUnderstandingText: boolean
+  writingOrganizationIsHard: boolean
+  spellingOrWordFindingIsHard: boolean
+  energyFluctuatesALot: boolean
+  needsFrequentBreaks: boolean
+  morningsAreHard: boolean
+  eveningsAreHard: boolean
+  canCrashAfterBusyDays: boolean
+  anxietyAroundSchoolTasks: boolean
+  avoidsTasksDueToOverwhelm: boolean
+  sensoryOverload: boolean
+  suddenChangesAreHard: boolean
+  groupSettingsAreDraining: boolean
+}
+
+export interface DisplaySettings {
+  fontFamily: 'default' | 'comic-neue' | 'opendyslexic' | 'lexend'
+  textSize: 'default' | 'large' | 'xlarge'
+  letterSpacing: 'default' | 'relaxed' | 'wide'
+  theme: 'dark' | 'light' | 'cream' | 'soft-blue' | 'soft-green'
+}
 export interface PreferencesDoc {
   _id: string
   userId: string
-  disabilities: string[]
+  disabilities: DisabilityProfile[]
+  learningContext: LearningContext
   schedulePreferences: {
-    preferredStudyTime: string
-    maxSessionMinutes: number
-    breakFrequency: string
+    preferredStudyTime: 'morning' | 'afternoon' | 'evening' | 'varies'
+    maxSessionMinutes: 15 | 25 | 30 | 45 | 60
+    breakFrequency: 'rare' | 'normal' | 'frequent'
+    prefersShortDeadlines: boolean
+    needsSoftReminders: boolean
   }
+  displaySettings: DisplaySettings
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface RecommendationAssessmentData {
@@ -272,14 +314,38 @@ export const userApi = {
   get: () => {
     return apiFetch<UserDoc>('/users')
   },
+  updateAvatar: (avatarUrl: string) => {
+    return apiFetch<UserDoc>('/users/me/avatar', {
+      method: 'PATCH',
+      body: JSON.stringify({ avatarUrl }),
+    })
+  },
+}
+
+export interface CreatePreferencesPayload {
+  disabilities?: DisabilityProfile[]
+  learningContext?: Partial<LearningContext>
+  schedulePreferences?: Partial<PreferencesDoc['schedulePreferences']>
+  displaySettings?: Partial<DisplaySettings>
 }
 
 export const preferencesApi = {
   get: () => {
     return apiFetch<PreferencesDoc>('/preferences')
   },
+  create: (payload: CreatePreferencesPayload) => {
+    return apiFetch<PreferencesDoc>('/preferences', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+  update: (payload: Partial<CreatePreferencesPayload>) => {
+    return apiFetch<PreferencesDoc>('/preferences', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    })
+  },
 }
-
 export const semesterApi = {
   create: (payload: CreateSemesterPayload) => {
     return apiFetch<SemesterDoc>('/semesters', {

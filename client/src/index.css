@@ -37,10 +37,74 @@
   --input-border: #e5e7eb;
 }
 
-:root[data-accessibility="dyslexic"] {
+:root[data-font="comic-neue"] {
   --font-main: "Comic Neue", sans-serif;
+  --letter-spacing: 0.4px;
+  line-height: 1.7;
+}
+
+:root[data-font="opendyslexic"] {
+  --font-main: "OpenDyslexic", sans-serif;
   --letter-spacing: 0.35px;
   line-height: 1.6;
+}
+
+:root[data-font="lexend"] {
+  --font-main: "Lexend", sans-serif;
+  --letter-spacing: 0.25px;
+  line-height: 1.5;
+}
+
+
+:root[data-text-size="large"] {
+  font-size: 1.125rem;
+}
+
+:root[data-text-size="xlarge"] {
+  font-size: 1.25rem; 
+}
+
+
+:root[data-letter-spacing="relaxed"] {
+  --letter-spacing: 0.05em;
+}
+
+:root[data-letter-spacing="wide"] {
+  --letter-spacing: 0.1em;
+}
+
+
+:root[data-theme="cream"] {
+  --bg: #FDFBF7;
+  --bg-elevated: #ffffff;
+  --text: #4a4a4a;
+  --text-h: #1a1a1a;
+  --border: #e5e0d8;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --input-border: #e5e0d8;
+  color-scheme: light;
+}
+
+:root[data-theme="soft-blue"] {
+  --bg: #F0F6FA;
+  --bg-elevated: #ffffff;
+  --text: #3b4b5b;
+  --text-h: #1a252f;
+  --border: #d5e1eb;
+  --border-subtle: rgba(44, 62, 80, 0.06);
+  --input-border: #d5e1eb;
+  color-scheme: light;
+}
+
+:root[data-theme="soft-green"] {
+  --bg: #F0FAF4;
+  --bg-elevated: #ffffff;
+  --text: #3b4f43;
+  --text-h: #17261d;
+  --border: #d5ebd9;
+  --border-subtle: rgba(45, 64, 53, 0.06);
+  --input-border: #d5ebd9;
+  color-scheme: light;
 }
 
 #pattern-div {

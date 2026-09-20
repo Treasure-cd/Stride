@@ -81,7 +81,16 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
     if (!currentUser) throw new Error("Authentication required")
 
     const token = await currentUser.getIdToken()
-    const payload = { disabilities: selectedProfiles, learningContext: learningContext }
+      const isReadingWriting = selectedProfiles.includes('Reading & Writing')
+
+      const payload = {
+        disabilities: selectedProfiles,
+        learningContext: learningContext,
+        displaySettings: {
+          fontFamily: isReadingWriting ? 'comic-neue' : 'default',
+          textSize: isReadingWriting ? 'large' : 'default',
+        },
+      }
 
     const response = await fetch(`${BASE_URL}/preferences`, {
       method: 'POST',

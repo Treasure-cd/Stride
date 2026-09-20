@@ -47,6 +47,30 @@ const schedulePreferencesSchema = new mongoose.Schema({
   needsSoftReminders:    { type: Boolean, default: false },
 }, { _id: false });
 
+const displaySettingsSchema = new mongoose.Schema({
+  fontFamily: {
+    type: String,
+    enum: ['default', 'comic-neue', 'opendyslexic', 'lexend'],
+    default: 'default'
+  },
+  textSize: {
+    type: String,
+    enum: ['default', 'large', 'xlarge'], // note: was 'x-large', your UI uses 'xlarge' — pick one and match everywhere
+    default: 'default'
+  },
+  letterSpacing: {
+    type: String,
+    enum: ['default', 'relaxed', 'wide'],
+    default: 'default'
+  },
+  theme: {
+    type: String,
+    enum: ['dark', 'light', 'cream', 'soft-blue', 'soft-green'],
+    default: 'dark'
+  },
+}, { _id: false });
+
+
 const VALID_PROFILES = [
   'Focus & Attention',
   'Reading & Writing',
@@ -64,6 +88,7 @@ const preferencesSchema = new mongoose.Schema({
   },
   learningContext:      { type: learningContextSchema,      default: () => ({}) },
   schedulePreferences:  { type: schedulePreferencesSchema,  default: () => ({}) },
+  displaySettings: { type: displaySettingsSchema, default: () => ({}) }
 }, { timestamps: true });
 
 export default mongoose.model('Preferences', preferencesSchema);
