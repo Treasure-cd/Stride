@@ -64,7 +64,6 @@ const handlePrefChange = (key: string, value: string) => {
  
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-(--bg) px-6 py-12 text-(--text) sm:px-8 lg:px-10 transition-colors duration-300">
         <div className="mx-auto max-w-4xl">
           
