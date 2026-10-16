@@ -18,7 +18,7 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL
+  const BASE_URL = import.meta.env.VITE_API_BASE_PROD_URL
 
   const filteredUniversities = UNIVERSITIES.filter((uni) =>
     uni.toLowerCase().includes(institution.toLowerCase())
@@ -55,14 +55,14 @@ const Step1UserProfile = ({ setDisplayName, onNext }: UserProfile) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` 
+            "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(payload),
         });
 
 if (!response.ok) {
     // 1. Get the raw text first to see if it's HTML or JSON
-    const errorText = await response.text(); 
+    const errorText = await response.text();
     console.log("Raw Server Error Response:", errorText);
 
     // 2. Try to parse it safely
@@ -73,7 +73,7 @@ if (!response.ok) {
     } catch (e) {
         errorMessage = `Server error (${response.status}): ${errorText.substring(0, 100)}`;
     }
-    
+
     throw new Error(errorMessage);
 }
 

@@ -50,14 +50,14 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
   const [learningContext, setLearningContext] = useState<Record<string, boolean>>({})
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL;
+  const BASE_URL = import.meta.env.VITE_API_BASE_PROD_URL;
 
   const toggleProfile = (profile: LearningProfile) => {
     const isSelected = selectedProfiles.includes(profile)
-    
+
     if (profile === 'Standard Track') {
       setSelectedProfiles(isSelected ? [] : ['Standard Track'])
-      if (!isSelected) setLearningContext({}) 
+      if (!isSelected) setLearningContext({})
     } else if (isSelected) {
       setSelectedProfiles(selectedProfiles.filter((p) => p !== profile))
       const updatedContext = { ...learningContext }
@@ -106,7 +106,7 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
       throw new Error(errorData?.message || "Failed to save preferences.")
     }
   }
-  
+
   const handleSubmit = async () => {
     setIsSaving(true)
     setError(null)
@@ -171,10 +171,10 @@ export default function Step2LearningProfile({ displayName, onNext }: Step2Props
                            {learningContext[option.key] && <span className="text-white text-xs">✓</span>}
                         </div>
                         <span className="text-sm text-[var(--text)] select-none">{option.label}</span>
-                        <input 
-                          type="checkbox" 
-                          className="hidden" 
-                          checked={!!learningContext[option.key]} 
+                        <input
+                          type="checkbox"
+                          className="hidden"
+                          checked={!!learningContext[option.key]}
                           onChange={() => toggleSubOption(option.key)}
                           disabled={isSaving}
                         />

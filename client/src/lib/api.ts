@@ -1,6 +1,6 @@
 import { getAuth } from 'firebase/auth'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_DEV_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_PROD_URL;
 
 export interface UserProfile {
   name: string
@@ -406,7 +406,7 @@ export const noteApi = {
     return apiFetch<Note[]>(`/notes/semester/${encodeURIComponent(semesterId)}`)
   },
   create: (payload: CreateNotePayload) => {
-    return apiFetch<Note>('/notes/save', { 
+    return apiFetch<Note>('/notes/save', {
       method: 'POST',
       body: JSON.stringify(payload),
     })
