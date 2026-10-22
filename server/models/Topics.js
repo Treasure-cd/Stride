@@ -4,18 +4,18 @@ const topicSchema = new mongoose.Schema({
   userId: { type: String, required: true, index: true },
   semesterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Semester', required: true, index: true },
   courseId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true }, // Links to the embedded course ID
-  
+
   title: { type: String, required: true }, // e.g., "Pointer Arithmetic" or "Graph Traversals"
-  
+
   isCompleted: { type: Boolean, default: false },
   completedAt: { type: Date },
-  
-  status: { 
-    type: String, 
-    enum: ['backlog', 'scheduled', 'mastered'], 
-    default: 'backlog' 
+
+  status: {
+    type: String,
+    enum: ['backlog', 'scheduled', 'mastered'],
+    default: 'backlog'
   },
-  
+
   resourceLink: { type: String, default: '' }
 }, { timestamps: true });
 

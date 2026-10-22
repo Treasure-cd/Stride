@@ -62,12 +62,13 @@ export default function HomePanel({
 }: HomePanelProps) {
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null)
+  const [isMoodCheckerVisible, setIsMoodCheckerVisible] = useState(true)
 
   return (
     <div className="flex flex-col gap-8">
       <RecommendationsSection />
-      {!todayMood && (
-        <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} />
+      {isMoodCheckerVisible && !todayMood && (
+        <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} onClose={() => setIsMoodCheckerVisible(false)} />
       )}
 <div>
   <div className="flex items-center justify-between mb-4">
@@ -234,8 +235,8 @@ export default function HomePanel({
     )}
   </div>
   </div>
-    {todayMood && (
-        <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} />
+    {isMoodCheckerVisible && todayMood && (
+        <MoodChecker todayMood={todayMood} moodLoading={moodLoading} onLogMood={onLogMood} onClose={() => setIsMoodCheckerVisible(false)} />
       )}
       {selectedNote && (
         <div 

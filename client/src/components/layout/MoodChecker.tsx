@@ -1,4 +1,5 @@
 import type { MoodState } from "../../lib/api"
+import { XIcon } from "../../lib/icons"
 
 const CAPACITY_LEVELS: { 
   value: MoodState; 
@@ -46,10 +47,12 @@ export default function MoodChecker({
   todayMood,
   moodLoading,
   onLogMood,
+  onClose,
 }: {
   todayMood: MoodState | null
   moodLoading: boolean
   onLogMood: (mood: MoodState) => void
+  onClose: () => void
 }) {
   if (moodLoading) return null
 
@@ -61,15 +64,33 @@ export default function MoodChecker({
         <span className="text-(--text) text-sm sm:text-base">
           Current capacity: <strong className={`font-semibold ${logged?.color.split(' ')[0]}`}>{logged?.label}</strong>
         </span>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="p-1 rounded-md text-(--text) opacity-50 hover:opacity-100 hover:bg-(--bg) transition-all shrink-0 cursor-pointer"
+        >
+          <XIcon size={16} />
+        </button>
       </div>
     )
   }
 
   return (
     <div className="p-5 sm:p-6 rounded-2xl bg-(--bg-elevated) border border-(--border-subtle) flex flex-col gap-5 shadow-sm">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <p className="text-base sm:text-lg font-semibold text-(--text-h)">What is your current capacity?</p>
-        <span className="text-xs font-medium text-(--text) opacity-50 uppercase tracking-wider hidden sm:block">Energy Check-In</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-xs font-medium text-(--text) opacity-50 uppercase tracking-wider hidden sm:block">Energy Check-In</span>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="p-1 rounded-md text-(--text) opacity-50 hover:opacity-100 hover:bg-(--bg) transition-all cursor-pointer"
+          >
+            <XIcon size={16} />
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
